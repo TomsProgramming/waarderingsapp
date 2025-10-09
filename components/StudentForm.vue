@@ -37,6 +37,14 @@ async function submit() {
 async function doneTyping() {
   if (!studentNumber.value) return;
 
+  // Only search for students if the number has at least 3 digits
+  // This prevents unnecessary API calls for incomplete inputs like "2"
+  if (studentNumber.value.toString().length < 3) {
+    currStudent.value = null;
+    error.value = null;
+    return;
+  }
+
   loading.value = true;
   error.value = null;
 
@@ -108,6 +116,16 @@ async function doneTyping() {
               Ben jij <strong>{{ currStudent.name }}</strong
               >?
             </p>
+          </div>
+
+          <!-- Hint for short student numbers -->
+          <div
+            v-if="
+              studentNumber && studentNumber.toString().length < 3 && !loading
+            "
+            class="hint-section"
+          >
+            <p class="hint-text">Voer minimaal 3 cijfers in om te zoeken...</p>
           </div>
 
           <!-- Error message -->
@@ -301,6 +319,20 @@ async function doneTyping() {
   font-size: 14px;
   color: #6b7280;
   margin: 0;
+}
+
+.hint-section {
+  background: #fefbf3;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.hint-text {
+  font-size: 14px;
+  color: #92400e;
+  margin: 0;
+  text-align: center;
 }
 
 .error-section {
