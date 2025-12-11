@@ -10,6 +10,7 @@ const {
 
 // Get student data from route params and fetch from database
 const selectedStudentId = computed(() => route.query.studentId);
+const reviewerType = computed(() => route.query.reviewerType || "klant");
 const selectedStudent = ref(null);
 const existingReviews = ref([]);
 const isLoadingStudent = ref(false);
@@ -80,7 +81,7 @@ onMounted(() => {
 // Check if this student's review has been submitted (from database)
 const isReviewSubmitted = computed(() => {
   return existingReviews.value.some(
-    (review) => review.reviewerType === "klant"
+    (review) => review.reviewerType === reviewerType.value
   );
 });
 
@@ -139,7 +140,7 @@ const submitReview = async () => {
   try {
     // Submit review to database
     await submitStudentReview(selectedStudent.value.id, {
-      reviewerType: "klant",
+      reviewerType: reviewerType.value,
       reviewerId: "anonymous", // You could get this from user session
       ratings: ratings.value,
       reviewText: reviewText.value,
@@ -163,8 +164,12 @@ const submitReview = async () => {
 
 // Function to go back
 const goBack = () => {
-  // Navigate back to the klant page
-  navigateTo("/klant");
+  // Navigate back based on reviewer type
+  if (reviewerType.value === "docent") {
+    navigateTo("/docent");
+  } else {
+    navigateTo("/klant");
+  }
 };
 
 // Function to close modal and potentially navigate away

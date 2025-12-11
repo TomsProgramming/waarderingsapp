@@ -120,7 +120,7 @@ const updateChartData = (skills: any[]) => {
             </div>
 
             <div class="comments-card">
-              <h3 class="section-title">Reviews van klanten:</h3>
+              <h3 class="section-title">Reviews:</h3>
               <div v-if="loading" class="text-center py-4">
                 <div
                   class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"
@@ -299,6 +299,30 @@ const updateChartData = (skills: any[]) => {
   color: #6b7280;
   margin: 0;
   line-height: 1.4;
+}
+
+.comment-date {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 8px 0 0 0;
+  font-style: italic;
+}
+
+.rating-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.rating-badge {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #374151;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .chart-section {

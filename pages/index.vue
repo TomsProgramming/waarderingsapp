@@ -14,7 +14,7 @@
           <router-link class="role-card" to="/student">
             <div class="role-icon">👨‍🎓</div>
             <p class="role-name">Student</p>
-            <p class="role-description">Bekijk je beoordelingen</p>
+            <p class="role-description">Bekijk je waarderingen</p>
           </router-link>
 
           <router-link class="role-card" to="/docent">
