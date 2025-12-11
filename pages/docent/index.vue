@@ -34,19 +34,23 @@ ws.addEventListener("message", (event) => {
 
 const edit = ref(false);
 const editLoading = ref(false);
-let currStudent = reactive({
+const currStudent = ref({
   id: null,
   name: "",
   skills: [],
 });
 
 async function setSkill(i, level) {
-  if (!currStudent.id || !currStudent.skills[i]) return;
+  if (!currStudent.value.id || !currStudent.value.skills[i]) return;
 
   try {
-    await updateStudentSkill(currStudent.id, currStudent.skills[i].id, level);
-    currStudent.skills[i].level = level;
-    currStudent.skills[i].assessedAt = new Date().toISOString();
+    await updateStudentSkill(
+      currStudent.value.id,
+      currStudent.value.skills[i].id,
+      level
+    );
+    currStudent.value.skills[i].level = level;
+    currStudent.value.skills[i].assessedAt = new Date().toISOString();
   } catch (err) {
     console.error("Error updating skill:", err);
   }
@@ -60,9 +64,15 @@ async function editStudent(studentId) {
     const student = await fetchStudent(studentId);
     const skills = await fetchStudentSkills(studentId);
 
-    currStudent.id = student.id;
-    currStudent.name = student.name;
-    currStudent.skills = skills;
+    console.log("Fetched skills count:", skills.length);
+    console.log("Skills data:", skills);
+
+    // Completely replace the currStudent object to avoid any reactivity issues
+    currStudent.value = {
+      id: student.id,
+      name: student.name,
+      skills: skills,
+    };
 
     ws.send({ type: "get", number: student.studentNumber });
   } catch (err) {
@@ -522,9 +532,25 @@ async function editStudent(studentId) {
   text-align: center;
 }
 
+.skill-description {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+  text-align: center;
+  line-height: 1.4;
+}
+
 .skill-input-wrapper {
   display: flex;
   justify-content: center;
+}
+
+.skill-assessed {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 8px 0 0 0;
+  text-align: center;
+  font-style: italic;
 }
 
 .fade-in {

@@ -25,10 +25,10 @@ export default defineEventHandler(async (event) => {
     const db = await createConnectionPool(sessionKey);
 
     if (method === "GET") {
-      // Get all skills for a student
+      // Get all skills for a student (using DISTINCT to avoid duplicates)
       const result = await db.query(
         `
-                SELECT 
+                SELECT DISTINCT ON (s.name)
                     s.id,
                     s.name,
                     s.description,
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
                     ss.assessed_at
                 FROM skills s
                 LEFT JOIN student_skills ss ON s.id = ss.skill_id AND ss.student_id = $1
-                ORDER BY s.category, s.name
+                ORDER BY s.name, s.id
             `,
         [Number(studentId)]
       );
