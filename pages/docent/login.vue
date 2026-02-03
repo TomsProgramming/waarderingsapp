@@ -1,9 +1,20 @@
 <script setup>
-function handleSubmit(event) {
+const { loginDocent } = useDocenten();
+
+async function handleSubmit(event) {
     const formData = new FormData(event.target)
 
-    console.log('Username:', formData.get('username'))
-    console.log('Password:', formData.get('password'))
+    const username = formData.get("username");
+    const password = formData.get("password");
+
+    try {
+        await loginDocent(username, password);
+        // Redirect or show success message
+        console.log("Login successful");
+    } catch (error) {
+        console.error("Login failed:", error);
+        // Show error message to user
+    }
 }
 </script>
 <template>

@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { session } from "~/assets/js/sessionKey";
 
 export interface Docent {
@@ -25,9 +25,32 @@ export const useDocenten = () => {
     };
 
     const loginDocent = async (username: string, password: string): Promise<Docent> => {
-        return {
-            id: 1,
-            username: username
+        loading.value = true;
+        error.value = null;
+        
+        try {
+            const sessionKey = getSessionKey();
+            const docent = await $fetch<Docent>(
+                `/api/docent/login?s=${sessionKey}`,
+                {
+                    method: "POST",
+                    body: { username, password },
+                }
+            );
+            return docent;
+        } catch (err: any) {
+            error.value = err.message || "Failed to login docent";
+            throw err;
+        } finally {
+            loading.value = false;
         }
     }
+
+    return {
+        loading: readonly(loading),
+        error: readonly(error),
+
+        // Actions
+        loginDocent,
+    };
 }
