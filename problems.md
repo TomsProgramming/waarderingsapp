@@ -1,3 +1,0 @@
-- [x] probleem 1
-- [ ] probleem 2
-- [ ] probleem 3
