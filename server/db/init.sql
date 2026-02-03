@@ -1,6 +1,15 @@
 -- Initialize the database with student tables
 -- This script should be run once to set up the database
 
+-- Create docenten table if it doesn't exist
+CREATE TABLE IF NOT EXISTS docenten (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create students table if it doesn't exist
 CREATE TABLE IF NOT EXISTS students (
     id SERIAL PRIMARY KEY,
@@ -70,6 +79,7 @@ INSERT INTO students (student_number, first_name, last_name, email, class_name, 
 ON CONFLICT (student_number) DO NOTHING;
 
 -- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_docenten_username ON docenten(username);
 CREATE INDEX IF NOT EXISTS idx_students_student_number ON students(student_number);
 CREATE INDEX IF NOT EXISTS idx_student_reviews_student_id ON student_reviews(student_id);
 CREATE INDEX IF NOT EXISTS idx_student_skills_student_id ON student_skills(student_id);
