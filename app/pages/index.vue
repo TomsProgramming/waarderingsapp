@@ -1,6 +1,14 @@
 <template>
-    <h1>Index page</h1>
-    <NuxtLink to="/test">
-        andere pagina
-    </NuxtLink>
+    <div class="wrapper">
+
+    </div>
 </template>
+
+<style scoped>
+.wrapper {
+    background-color: #FF9408;
+
+    min-height: 100vh;
+
+}
+</style>
