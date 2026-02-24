@@ -1,85 +1,109 @@
 <template>
     <div id="beginscherm">
-        <h1>De plek voor <br>creatievelingen.</h1>
-        
-        <img src="/img/bureau-logo.png" id="bureau-logo">
+        <div id="logo-box">
+            <img src="/img/bureau-logo.png" id="bureau-logo">
+        </div>
+
+        <div id="title-box">
+            <p>De plek voor <br>creatievelingen.</p>
+        </div>
 
         <div id="inlog-box">
-        <h2>Hoe wil je inloggen?</h2>
+            <P>Hoe wil je inloggen?</P>
 
-        <div class="keuzen-knoppen-box">
-            <button class="keuzen-knop">Student</button>
-            <button class="keuzen-knop">Docent</button>
-            <button class="keuzen-knop">Nieuw account</button>
-        </div>
+            <div class="keuzen-knoppen-box">
+                <button class="keuzen-knop">Student</button>
+                <button class="keuzen-knop">Docent</button>
+                <button class="keuzen-knop">Nieuw account</button>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-    #beginscherm{
-        background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('/img/beginscherm-achtergrond.png');
-        background-size: cover;
-        background-position: center;
+#beginscherm {
+    position: fixed;
+    inset: 0;
 
-        display: flex;
-        justify-content: center;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.45)), url(/img/beginscherm-achtergrond.png);
 
-        width: 100vw;
-        height: 100vh;
-    }
+    background-size: cover;
+    background-position: center;
 
-    #bureau-logo{
-        width: 120px;
-        height: max-content;
-    }
+    display: flex;
+    flex-direction: column;
+}
 
-    h1 {
-        color: white;
-        font-family: "Inter", sans-serif;
-    }
+#bureau-logo {
+    width: 120px;
+    height: max-content;
+}
 
-    #inlog-box {
-        width: min(320px, 92vw);
-        margin-top: 10px;
-    }
+#logo-box {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
 
-    #inlog-box h2 {
-        margin: 0 0 14px 0;
-        font-size: 20px;
-        font-weight: 700;
+#title-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: -58px;
+}
 
-        color: white;
-        font-family: "Inter", sans-serif;
-    }
+#title-box p {
+    color: white;
+    font-family: "Inter", sans-serif;
+    font-size: 45px;
+    text-shadow: 0px 3px 6px rgba(0, 0, 0, 0.74902);
+}
 
-    .keuzen-knoppen-box {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
 
-    .keuzen-knop {
-        width: 100%;
-        height: 52px;
+#inlog-box {
+    width: 100%;
+    margin-top: 170px;
+}
 
-        border: none;
-        border-radius: 999px;
-        background: #fff;
-        color: #222;
+#inlog-box p {
+    margin: 0 0 14px 0;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
 
-        font-family: "Inter", sans-serif;
-        font-size: 15px;
-        font-weight: 500;
+    color: white;
+    font-family: "Inter", sans-serif;
+}
 
-        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.22);
-    }
+.keuzen-knoppen-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
 
-    .keuzen-knop:hover {
-        box-shadow: 0 12px 22px rgba(0, 0, 0, 0.28);
-    }
+.keuzen-knop {
+    width: 302px;
+    height: 55px;
 
-    .keuzen-knop:active {
-        transform: scale(0.99);
-    }
+    border: none;
+    border-radius: 999px;
+    background: #fff;
+    color: #222;
+
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.22);
+}
+
+.keuzen-knop:hover {
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.28);
+}
+
+.keuzen-knop:active {
+    transform: scale(0.99);
+}
 </style>
