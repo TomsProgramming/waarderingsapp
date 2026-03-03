@@ -1,12 +1,24 @@
 <script setup>
+const props = defineProps({
+    kleurActief: {
+        type: String,
+        default: '#ff9408'
+    }
+})
+
 const route = useRoute()
 
-const isActief = (pad) => route.path.startsWith(pad)
+const isActief = (type) => {
+    if (type === 'dashboard') {
+        return route.path.startsWith('/student') || route.path.startsWith('/docent')
+    }
+    return route.path.startsWith('/' + type)
+}
 </script>
 
 <template>
     <nav class="navigatieBalk">
-        <button class="navKnop" :class="{ navKnopActief: isActief('/student') }" aria-label="Dashboard">
+        <button class="navKnop" :class="{ navKnopActief: isActief('dashboard') }" aria-label="Dashboard">
             <svg viewBox="0 0 27 26" width="27" height="26">
                 <rect x="0" y="0" width="12" height="15" rx="1" />
                 <rect x="15" y="0" width="12" height="10" rx="1" />
@@ -14,14 +26,14 @@ const isActief = (pad) => route.path.startsWith(pad)
                 <rect x="15" y="12" width="12" height="14" rx="1" />
             </svg>
         </button>
-        <button class="navKnop" :class="{ navKnopActief: isActief('/feedback') }" aria-label="Feedback">
+        <button class="navKnop" :class="{ navKnopActief: isActief('feedback') }" aria-label="Feedback">
             <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M23.8369 0H2.64855C1.19185 0 0.013243 1.19185 0.013243 2.64855L0 26.4855L5.29709 21.1884H23.8369C25.2936 21.1884 26.4855 19.9965 26.4855 18.5398V2.64855C26.4855 1.19185 25.2936 0 23.8369 0ZM14.567 15.8913H11.9185V13.2427H14.567V15.8913ZM14.567 10.5942H11.9185V5.29709H14.567V10.5942Z"
                     fill="currentColor" />
             </svg>
         </button>
-        <button class="navKnop" :class="{ navKnopActief: isActief('/profiel') }" aria-label="Profiel">
+        <button class="navKnop" :class="{ navKnopActief: isActief('profiel') }" aria-label="Profiel">
             <svg viewBox="0 0 27 27" width="27" height="27" fill="currentColor">
                 <path
                     d="M13.5 13.5c2.97 0 5.4-2.43 5.4-5.4S16.47 2.7 13.5 2.7 8.1 5.13 8.1 8.1s2.43 5.4 5.4 5.4zm0 2.7c-3.6 0-10.8 1.8-10.8 5.4v2.7h21.6v-2.7c0-3.6-7.2-5.4-10.8-5.4z" />
@@ -57,6 +69,6 @@ const isActief = (pad) => route.path.startsWith(pad)
 }
 
 .navKnopActief {
-    color: #ff9408;
+    color: v-bind('props.kleurActief');
 }
 </style>
