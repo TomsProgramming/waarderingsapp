@@ -12,13 +12,51 @@
 
         <div class="body">
             <h2>STUDENTEN</h2>
-            <div class="student-card">
-                <img src="/img/glulogo.png" class="student-photo" />
+            <div class="student-cards">
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
 
-                <div class="student-info">
-                    <h3>Mariska Rooth</h3>
-                    <p>Webdesign</p>
-                    <span>402974</span>
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
+                </div>
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
+
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
+                </div>
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
+
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
+                </div>
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
+
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
+                </div>
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
+
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
                 </div>
             </div>
 
@@ -98,24 +136,42 @@
     font-size: 20px;
 }
 
+.student-cards {
+    display: flex;
+    flex-direction: column;
+
+    overflow-y: scroll; 
+    
+    height: 410px;
+    
+    margin-top: 20px;
+    gap: 10px;
+
+}
+
 .student-card {
     display: flex;
     align-items: center;
-    background-color: #3fcf9a;
-    border-radius: 35px;
-    padding: 0px 10px;
+    
     width: 100%;
-    max-width: 375px;
+    max-width: 435px;
     height: 98px;
+
+    background-color: #3fcf9a;
+
+    border-radius: 25px;
+    padding: 5px 10px;
     gap: 20px;
 }
 
 /* Profielfoto */
 .student-photo {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
     object-fit: cover;
+
+    width: 70px;
+    height: 70px;
+
+    border-radius: 50%;
 }
 
 /* Tekst */
@@ -144,7 +200,7 @@
 /* einde body */
 
 /* footer */
-.footer{
+.footer {
     flex: 1;
     background-color: #ffffff;
     border-top-left-radius: 30px;
@@ -153,5 +209,4 @@
     margin-bottom: -215px;
     box-shadow: 0 -6px 20px -4px rgba(0, 0, 0, 0.03);
 }
-
 </style>
