@@ -1,7 +1,9 @@
 <template>
-    <div class="login-docenten">
+    <div class="login-leerling">
+        <div id="logo-box">
+            <img src="/img/glulogo.png" class="glulogo" />
+        </div>
 
-        <img src="/img/glulogo.png" class="glulogo" />
         <div class="login-box">
 
             <input type="email" placeholder="Docenten mail" class="input-field" />
@@ -19,19 +21,26 @@
 </template>
 
 <style scoped>
-.login-docenten {
-    background-image: url('/img/achtergrond-loginpagina.png');
-    background-size: cover;
-    background-position: center;
-
+.login-leerling {
     font-family: Arial, sans-serif;
-
     width: 100vw;
     height: 95vh;
 
     display: flex;
-    justify-content: center;
     align-items: center;
+    flex-direction: column;
+}
+
+#logo-box {
+    background-image: url('/img/student-inlog-achtergrond.png');
+    background-size: cover;
+    background-position: center;
+
+    width: 100%;
+    height: 92vw;
+
+    display: flex;
+    justify-content: center;
 }
 
 .login-box {
@@ -45,8 +54,7 @@
 }
 
 .glulogo {
-    width: 120px;
-
+    width: 160px;
     position: absolute;
     top: 40px;
 }
@@ -105,7 +113,7 @@
 .login-button:focus,
 .login-button:active,
 .login-button:focus-visible {
-    background-color: #39c58d !important;
+    background-color: #b76904 !important;
     outline: none !important;
     box-shadow: none !important;
 }
