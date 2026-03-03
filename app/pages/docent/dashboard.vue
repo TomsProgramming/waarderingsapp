@@ -1,3 +1,7 @@
+<script setup>
+import NavigatieBalk from '~/components/NavigatieBalk.vue'
+</script>
+
 <template>
     <div class="dashboard-docenten">
 
@@ -58,11 +62,48 @@
                         <span>402974</span>
                     </div>
                 </div>
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
+
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
+                </div>
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
+
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
+                </div>
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
+
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
+                </div>
+                <div class="student-card">
+                    <img src="/img/glulogo.png" class="student-photo" />
+
+                    <div class="student-info">
+                        <h3>Mariska Rooth</h3>
+                        <p>Webdesign</p>
+                        <span>402974</span>
+                    </div>
+                </div>
             </div>
 
         </div>
 
         <div class="footer">
+            <NavigatieBalk />
 
         </div>
     </div>
@@ -91,7 +132,6 @@
 
 .header h1 {
     font-weight: 300;
-    letter-spacing: 2px;
     font-size: 22px;
 }
 
@@ -129,6 +169,7 @@
     border-top-right-radius: 30px;
     padding: 25px;
     margin-top: -40px;
+    overflow-y: auto;
 }
 
 .body h2 {
@@ -140,13 +181,13 @@
     display: flex;
     flex-direction: column;
 
-    overflow-y: scroll; 
+    overflow-y: auto; 
     
-    height: 410px;
-    
+    flex: 1;
+
     margin-top: 20px;
     gap: 10px;
-
+    padding-bottom: 20px;
 }
 
 .student-card {
@@ -201,12 +242,6 @@
 
 /* footer */
 .footer {
-    flex: 1;
-    background-color: #ffffff;
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-    margin-top: -53px;
-    margin-bottom: -215px;
-    box-shadow: 0 -6px 20px -4px rgba(0, 0, 0, 0.03);
+    background-color: #f4f4f4;
 }
 </style>
