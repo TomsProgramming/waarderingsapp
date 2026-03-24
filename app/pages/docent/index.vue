@@ -218,19 +218,19 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 /* Tekst */
 .student-info h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 400;
     color: black;
 }
 
 .student-info p {
     margin: 5px 0 0 0;
-    font-size: 14px;
+    font-size: 18px;
     color: black;
 }
 
 .student-info span {
-    font-size: 14px;
+    font-size: 18px;
     color: black;
 }
 
