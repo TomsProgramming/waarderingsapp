@@ -151,8 +151,8 @@ const rol = "DOCENT"
 }
 
 .wit {
-    background-color: white;
-    border: 2px solid #3ccf91;
+    background-color: #3ccf91;
+    border: 2px solid white;
 }
 
 .uitloggen {
