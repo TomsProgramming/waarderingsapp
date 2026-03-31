@@ -104,7 +104,6 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
         <div class="footer">
             <NavigatieBalk />
-
         </div>
     </div>
 </template>
@@ -181,8 +180,8 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
     display: flex;
     flex-direction: column;
 
-    overflow-y: auto; 
-    
+    overflow-y: auto;
+
     flex: 1;
 
     margin-top: 20px;
@@ -193,7 +192,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 .student-card {
     display: flex;
     align-items: center;
-    
+
     width: 100%;
     max-width: 435px;
     height: 98px;
