@@ -47,7 +47,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
             </main>
 
-            <NavigatieBalk kleur-actief="#2be6b9" />
+            <NavigatieBalk />
         </div>
 
     </div>
