@@ -7,13 +7,17 @@ const kleurActief = computed(() => isDocent.value ? '#39dea1' : '#ff9408')
 
 const paginas = computed(() => ({
     dashboard: rolPrefix.value,
-    feedback: `${rolPrefix.value}/feedbacklist`,
+    feedback: `${rolPrefix.value}/studentlist`,
     profiel: `${rolPrefix.value}/profiel`,
 }))
 
 const isActief = (type) => {
     if (type === 'dashboard') {
-        return route.path === rolPrefix.value || route.path === rolPrefix.value + '/'
+        return route.path === rolPrefix.value || route.path === rolPrefix.value + '/' || route.path === rolPrefix.value + '/dashboard'
+    }
+
+    if (type === 'feedback') {
+        return route.path.startsWith(`${rolPrefix.value}/studentlist`) || route.path.startsWith(`${rolPrefix.value}/feedbacklist`)
     }
     return route.path.startsWith(paginas.value[type])
 }

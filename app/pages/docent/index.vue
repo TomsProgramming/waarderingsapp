@@ -1,5 +1,9 @@
 <script setup>
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
+
+const goToPage = () => {
+    navigateTo('/docent/dashboard')
+}
 </script>
 
 <template>
@@ -17,7 +21,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
         <div class="body">
             <h2>STUDENTEN</h2>
             <div class="student-cards">
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -26,7 +30,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -35,7 +39,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -44,7 +48,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -53,7 +57,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -62,7 +66,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -71,7 +75,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -80,7 +84,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -89,7 +93,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -181,8 +185,8 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
     display: flex;
     flex-direction: column;
 
-    overflow-y: auto; 
-    
+    overflow-y: auto;
+
     flex: 1;
 
     margin-top: 20px;
@@ -193,12 +197,13 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 .student-card {
     display: flex;
     align-items: center;
-    
+
     width: 100%;
     max-width: 435px;
     height: 98px;
 
     background-color: #3fcf9a;
+    cursor: pointer;
 
     border-radius: 25px;
     padding: 5px 10px;
