@@ -5,6 +5,8 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 const actieveTab = ref('docent')
 const klantBericht = ref("De student werkte goed samen en communiceerde duidelijk. Fijne samenwerking!")
 
+const { themaKleur, themaKleurDonker } = useDocentThema()
+
 const onderdelen = [
     'Presenteren',
     'Organiseren',
@@ -169,7 +171,7 @@ const verstuurReview = () => {
     flex-direction: column;
     height: 100dvh;
     overflow: hidden;
-    background-color: #39dea1;
+    background-color: v-bind(themaKleur);
 }
 
 /* ===== Header ===== */
@@ -275,7 +277,7 @@ const verstuurReview = () => {
     padding: 8px 6% 28px;
     gap: 12px;
     scrollbar-width: thin;
-    scrollbar-color: #39dea1 transparent;
+    scrollbar-color: v-bind(themaKleur) transparent;
     background-color: white;
 }
 
@@ -284,7 +286,7 @@ const verstuurReview = () => {
 }
 
 .paginaInhoud::-webkit-scrollbar-thumb {
-    background-color: #39dea1;
+    background-color: v-bind(themaKleur);
     border-radius: 10px;
 }
 
@@ -312,7 +314,7 @@ const verstuurReview = () => {
     width: 82px;
     height: 82px;
     border-radius: 50%;
-    background-color: #39dea1;
+    background-color: v-bind(themaKleur);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -454,20 +456,20 @@ const verstuurReview = () => {
     width: 17px;
     height: 17px;
     border-radius: 50%;
-    border: 1.7px solid #39dea1;
+    border: 1.7px solid v-bind(themaKleur);
     background: transparent;
     cursor: pointer;
 }
 
 .cirkel.gevuld {
-    background: #39dea1;
+    background: v-bind(themaKleur);
 }
 
 .verstuurKnop {
     margin-top: 14px;
     border: none;
     border-radius: 6px;
-    background: #39dea1;
+    background: v-bind(themaKleur);
     color: #ffffff;
     width: 100%;
     height: 52px;

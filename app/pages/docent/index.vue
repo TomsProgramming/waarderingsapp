@@ -1,6 +1,6 @@
 <script setup>
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
-
+const { themaKleur, themaKleurKaart } = useDocentThema()
 const goToPage = () => {
     navigateTo('/docent/dashboard')
 }
@@ -117,7 +117,7 @@ const goToPage = () => {
     display: flex;
     flex-direction: column;
 
-    background-color: #39c58d;
+    background-color: v-bind(themaKleur);
 
     height: 100vh;
     width: 100vw;
@@ -201,7 +201,7 @@ const goToPage = () => {
     max-width: 435px;
     height: 98px;
 
-    background-color: #3fcf9a;
+    background-color: v-bind(themaKleurKaart);
     cursor: pointer;
 
     border-radius: 25px;

@@ -3,6 +3,8 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
 const naam = "JORDEN GIELEN"
 const rol = "DOCENT"
+
+const { themaKleur, themaKleurDonker } = useDocentThema()
 </script>
 
 <template>
@@ -37,8 +39,8 @@ const rol = "DOCENT"
                         <p>THEMA</p>
 
                         <div class="thema-opties">
-                            <div class="kleur oranje"></div>
-                            <div class="kleur wit"></div>
+                            <div class="kleur groen" @click="themaKleur = '#39dea1'"></div>
+                            <div class="kleur oranje" @click="themaKleur = '#FF9408'"></div>
                         </div>
                     </div>
                 </div>
@@ -73,13 +75,13 @@ const rol = "DOCENT"
 }
 
 .header h1 {
-    color: #1db47e;
+    color: v-bind(themaKleurDonker);
     font-size: 22px;
     margin: 0;
 }
 
 .header h2 {
-    color: #6ee7b7;
+    color: v-bind(themaKleur);
     font-size: 17px;
     margin: 0;
 }
@@ -89,7 +91,7 @@ const rol = "DOCENT"
     flex: 1;
     display: flex;
 
-    background: linear-gradient(180deg, #3ccf91, #32c48d);
+    background: linear-gradient(180deg, v-bind(themaKleur), v-bind(themaKleur));
 
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
@@ -133,7 +135,7 @@ const rol = "DOCENT"
 
     padding: 14px;
 
-    background-color: rgba(0, 128, 96, 0.4);
+    background-color: v-bind(themaKleurDonker);
     color: white;
 
     border-radius: 8px;
@@ -163,7 +165,7 @@ const rol = "DOCENT"
 
     padding: 15px;
 
-    background-color: rgba(0, 128, 96, 0.4);
+    background-color: v-bind(themaKleurDonker);
 
     border-radius: 8px;
 
@@ -187,17 +189,22 @@ const rol = "DOCENT"
 .kleur {
     width: 25px;
     height: 25px;
-
     border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kleur:hover {
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.groen {
+    background-color: #39dea1;
 }
 
 .oranje {
-    background-color: orange;
-}
-
-.wit {
-    background-color: #3ccf91;
-    border: 2px solid white;
+    background-color: #FF9408;
 }
 
 .uitloggen {
@@ -211,7 +218,7 @@ const rol = "DOCENT"
     border-radius: 10px;
     cursor: pointer;
 
-    background-color: rgba(0, 128, 96, 0.6);
+    background-color: v-bind(themaKleurDonker);
     color: white;
 
     font-weight: lighter;
