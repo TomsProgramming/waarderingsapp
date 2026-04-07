@@ -126,21 +126,28 @@ const verstuurReview = () => {
 .pagina {
     display: flex;
     flex-direction: column;
+
     height: 100dvh;
+
     overflow: hidden;
+
     background-color: #ff9408;
 }
 
 .paginaHoofd {
-    flex-shrink: 0;
     display: flex;
     align-items: center;
+
+    flex-shrink: 0;
+
     gap: 8px;
+
     padding: 4vh 5% 3vh;
 }
 
 .paginaHoofd h2{
     color: white;
+
     font-family: 'inter', sans-serif;
     font-weight: 400;
     text-transform: uppercase;  
@@ -155,12 +162,16 @@ const verstuurReview = () => {
 }
 
 .terugKnop {
-    background: none;
-    border: none;
-    color: #ffffff;
-    padding: 0;
     display: grid;
     place-items: center;
+
+    background: none;
+
+    border: none;
+
+    color: #ffffff;
+
+    padding: 0;
     line-height: 0;
     cursor: pointer;
 }
@@ -169,8 +180,9 @@ const verstuurReview = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 12%;
     position: relative;
+
+    padding: 0 12%;
     margin-bottom: -9px;
     min-height: 46px;
 }
@@ -179,6 +191,7 @@ const verstuurReview = () => {
     position: absolute;
     left: 50%;
     top: 6px;
+
     transform: translateX(-50%);
     z-index: 6;
 }
@@ -194,7 +207,6 @@ const verstuurReview = () => {
     font-size: 18px;
     font-weight: 400;
     cursor: pointer;
-    /* z-index: 4; */
 }
 
 .tabActief {
@@ -203,8 +215,10 @@ const verstuurReview = () => {
 
 .paginaWit {
     flex: 1;
+
     display: flex;
     flex-direction: column;
+    
     background-color: #ebebeb;
     border-radius: 16px 16px 0 0;
     overflow: hidden;
@@ -360,53 +374,6 @@ const verstuurReview = () => {
     line-height: 1.65;
     margin: 0;
 }
-
-/* .reviewSectie {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.reviewTitel {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(28px, 6vw, 34px);
-    color: #1e1e1e;
-}
-
-.reviewVeld {
-    border: none;
-    border-radius: 12px;
-    min-height: 96px;
-    background: #dcdcdc;
-    resize: vertical;
-    padding: 12px;
-    font-family: 'Inter', sans-serif;
-    color: #212121;
-}
-
-.reviewVeld::placeholder {
-    color: #acacac;
-}
-
-.scoreSectie {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    padding-top: 4px;
-}
-
-.scoreRij {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 14px;
-}
-
-.scoreNaam {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(23px, 6.2vw, 32px);
-    color: #212121;
-} */
 
 .cirkels {
     display: flex;
