@@ -1,42 +1,116 @@
 <script setup>
 import RadarChart from '~/components/RadarChart.vue'
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
+
+const actieveTab = ref('docent')
+const klantBericht = ref("De student werkte goed samen en communiceerde duidelijk. Fijne samenwerking!")
+
+const onderdelen = [
+    'Presenteren',
+    'Organiseren',
+    'Zelfstandigheid',
+    'Samenwerken',
+    'Communiceren'
+]
+
+const scores = reactive({
+    Presenteren: 2,
+    Organiseren: 1,
+    Zelfstandigheid: 4,
+    Samenwerken: 4,
+    Communiceren: 4
+})
+
+const reviewTekst = ref('')
+
+const gaTerug = () => {
+    navigateTo('/docent')
+}
+
+const gaNaarKlant = () => {
+    navigateTo('/klant/rating')
+}
+
+const verstuurReview = () => {
+    console.log('Review verstuurd', {
+        review: reviewTekst.value,
+        scores: { ...scores }
+    })
+}
 </script>
 
 <template>
     <div class="pagina">
 
         <header class="paginaHoofd">
-            <span class="voortgangLabel">VOORTGANG</span>
-            <span class="studentNaam">JORDEN GIELEN</span>
+            <h2>VOORTGANG</h2>
         </header>
 
+        <!-- Tabs -->
+        <div class="tabFotoRij">
+            <button class="tab" :class="{ tabActief: actieveTab === 'docent' }" @click="actieveTab = 'docent'">
+                Docent
+            </button>
+
+            <div class="middenFoto">
+                <div class="studentFotoRond">
+                    <span class="studentInitialen">JG</span>
+                </div>
+            </div>
+
+            <button class="tab" :class="{ tabActief: actieveTab === 'klant' }" @click="actieveTab = 'klant'">
+                Klant
+            </button>
+        </div>
+
         <div class="paginaWit">
+
+            <!-- Student info -->
+            <div class="studentKaart">
+                <div class="studentInfo">
+                    <span class="studentNaam">Jorden Gielen</span>
+                    <span class="studentNummer">210055</span>
+                    <span class="studentRichting">webdesign</span>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
             <main class="paginaInhoud">
 
-                <button class="infoKnop" aria-label="Meer informatie">
-                    <svg viewBox="0 0 30 30" width="28" height="28" fill="none" stroke="#bbb" stroke-width="1.5">
-                        <circle cx="15" cy="15" r="13.5" />
-                        <circle cx="15" cy="9.5" r="1.2" fill="#bbb" stroke="none" />
-                        <line x1="15" y1="13" x2="15" y2="21" stroke-linecap="round" />
-                    </svg>
-                </button>
+                <!-- DOCENT VIEW -->
+                <div v-if="actieveTab === 'docent'" class="paneelInhoud">
 
-                <div class="grafiekWrapper">
-                    <RadarChart />
+                    <div class="grafiekWrapper">
+                        <RadarChart />
+                    </div>
+
+                    <section class="aandachtSectie">
+                        <h2 class="aandachtTitel">AANDACHT</h2>
+                        <p class="aandachtTekst">
+                            Er zijn wat aandacht punten voor deze student. Dit zijn namelijk
+                            zelfstandigheid, communiceren en samenwerken.
+                            <br /><br />
+                            Mogelijk kan je het met een van deze studenten laten werken.
+                        </p>
+                    </section>
+
                 </div>
 
-                <section class="aandachtSectie">
-                    <h2 class="aandachtTitel">AANDACHT</h2>
-                    <p class="aandachtTekst">
-                        We zien dat je erg goed bezig bent op het gebied van zelfstandigheid,
-                        samenwerken en communiceren. Wel merken we dat er nog enkele
-                        aandachtspunten liggen op het gebied van presenteren en organiseren.
-                        Hieronder vind je enkele medestudenten die hierin uitblinken. Mogelijk
-                        kun je jezelf door hun te observeren en van hen te leren verder
-                        ontwikkelen.
-                    </p>
-                </section>
+                <!-- KLANT VIEW -->
+                <div v-else class="paneelInhoud">
+
+                    <div class="grafiekWrapper">
+                        <RadarChart />
+                    </div>
+
+                    <section class="klantBericht">
+                        <h2 class="klantTitel">JAN</h2>
+                        <p class="klantTekst">
+                            {{ klantBericht }}
+                        </p>
+                    </section>
+
+                </div>
 
             </main>
 
@@ -49,32 +123,37 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:wght@400&display=swap');
 
-:global(html),
-:global(body) {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
 .pagina {
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
+
+    height: 100dvh;
+
+    overflow: hidden;
+
     background-color: #ff9408;
 }
 
 .paginaHoofd {
-    flex-shrink: 0;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 7vh 10% 5vh;
+    align-items: center;
+
+    flex-shrink: 0;
+
+    gap: 8px;
+
+    padding: 4vh 5% 3vh;
 }
 
-.voortgangLabel {
+.paginaHoofd h2{
+    color: white;
+
+    font-family: 'inter', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;  
+}
+
+.dashboardTitel {
     color: #ffffff;
     font-family: 'Inter', sans-serif;
     font-size: clamp(16px, 5.3vw, 20px);
@@ -82,23 +161,88 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
     text-transform: uppercase;
 }
 
-.studentNaam {
+.terugKnop {
+    display: grid;
+    place-items: center;
+
+    background: none;
+
+    border: none;
+
     color: #ffffff;
+
+    padding: 0;
+    line-height: 0;
+    cursor: pointer;
+}
+
+.tabFotoRij {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+
+    padding: 0 12%;
+    margin-bottom: -9px;
+    min-height: 46px;
+}
+
+.middenFoto {
+    position: absolute;
+    left: 50%;
+    top: 6px;
+
+    transform: translateX(-50%);
+    z-index: 6;
+}
+
+.tab {
+    border: none;
+    height: 32px;
+    min-width: 96px;
+    border-radius: 12px 12px 0 0;
+    background: #dedede;
+    color: #2a2a2a;
     font-family: 'Inter', sans-serif;
-    font-size: clamp(11px, 3.7vw, 14px);
+    font-size: 18px;
     font-weight: 400;
-    letter-spacing: 2.2px;
-    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.tabActief {
+    background: #ffffff;
 }
 
 .paginaWit {
     flex: 1;
+
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
-    border-radius: 20px 20px 0 0;
+    
+    background-color: #ebebeb;
+    border-radius: 16px 16px 0 0;
     overflow: hidden;
     min-height: 0;
+    position: relative;
+}
+
+.klantBericht {
+    background: #f5f6f7;
+    padding: 20px;
+    border-radius: 14px;
+}
+
+.klantTitel {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.klantTekst {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #313131;
 }
 
 .paginaInhoud {
@@ -106,30 +250,98 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    position: relative;
     min-height: 0;
+    padding: 8px 6% 28px;
+    gap: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: #ff9408 transparent;
+    background-color: white;
 }
 
-.infoKnop {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    background: none;
-    border: none;
-    padding: 4px;
-    cursor: pointer;
-    line-height: 0;
-    z-index: 1;
-    -webkit-tap-highlight-color: transparent;
+.paginaInhoud::-webkit-scrollbar {
+    width: 4px;
 }
 
+.paginaInhoud::-webkit-scrollbar-thumb {
+    background-color: #ff9408;
+    border-radius: 10px;
+}
+
+.paneelInhoud {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.studentKaart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    background: #ffffff;
+    padding: 36px 0 10px;
+    flex-shrink: 0;
+    z-index: 3;
+}
+
+.studentFotoRond {
+    flex-shrink: 0;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    background-color: #ff9408;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #f2f2f2;
+    margin-top: 0;
+}
+
+.studentInitialen {
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(20px, 5vw, 24px);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.studentInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    text-align: center;
+}
+
+.studentNaam {
+    color: #000000;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(29px, 6vw, 34px);
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+.studentNummer {
+    color: #212121;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(15px, 4.2vw, 18px);
+    font-weight: 400;
+}
+
+.studentRichting {
+    color: #000000;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(12px, 3.6vw, 15px);
+    font-weight: 400;
+}
+
+/* ===== Radar grafiek ===== */
 .grafiekWrapper {
-    align-self: center;
-    width: 72%;
-    max-width: 280px;
+    width: 80%;
+    max-width: 310px;
     aspect-ratio: 1;
     flex-shrink: 0;
-    margin: 8% 0;
+    margin: 6px auto 10px;
     position: relative;
 }
 
@@ -140,11 +352,12 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
 .aandachtSectie {
     background-color: #f5f6f7;
-    padding: 5% 6%;
-    margin-top: auto;
+    padding: 20px 18px;
+    border-radius: 14px;
     flex-shrink: 0;
 }
 
+.klantTitel,
 .aandachtTitel {
     font-family: 'Inter', sans-serif;
     font-size: clamp(16px, 5.3vw, 20px);
@@ -162,4 +375,22 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
     margin: 0;
 }
 
+.cirkels {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cirkel {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 1.7px solid #39dea1;
+    background: transparent;
+    cursor: pointer;
+}
+
+.cirkel.gevuld {
+    background: #39dea1;
+}
 </style>

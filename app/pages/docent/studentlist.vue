@@ -1,12 +1,16 @@
 <script setup>
-import NavigatieBalk from '~/components/NavigatieBalk.vue'
+import NavigatieBalk from '~/components/NavigatieBalk.vue';
+
+const goToPage = () => {
+    navigateTo('/docent/feedbacklist')
+}
 </script>
 
 <template>
     <div class="dashboard-docenten">
 
         <div class="header">
-            <h1>DASHBOARD</h1>
+            <h1>FEEDBACK DASHBOARD</h1>
 
             <div class="search-bar">
                 <span class="search-icon"></span>
@@ -17,7 +21,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
         <div class="body">
             <h2>STUDENTEN</h2>
             <div class="student-cards">
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -26,7 +30,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -35,7 +39,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -44,7 +48,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -53,7 +57,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -62,7 +66,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -71,7 +75,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -80,7 +84,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -89,7 +93,7 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
                         <span>402974</span>
                     </div>
                 </div>
-                <div class="student-card">
+                <div class="student-card" @click="goToPage">
                     <img src="/img/glulogo.png" class="student-photo" />
 
                     <div class="student-info">
@@ -221,19 +225,19 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 /* Tekst */
 .student-info h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 400;
     color: black;
 }
 
 .student-info p {
     margin: 5px 0 0 0;
-    font-size: 14px;
+    font-size: 18px;
     color: black;
 }
 
 .student-info span {
-    font-size: 14px;
+    font-size: 18px;
     color: black;
 }
 
