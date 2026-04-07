@@ -66,7 +66,7 @@ const bevestigVerwijder = () => {
 
         <header class="paginaHoofd">
             <span class="feedbackTitel">FEEDBACK</span>
-            <span class="docentNaam">Mariska Rooth</span>
+            <span class="docentNaam">Jorder Gielen</span>
         </header>
 
         <div class="tabs">
@@ -90,11 +90,6 @@ const bevestigVerwijder = () => {
                         <span class="klantNaam">{{ item.klant }}</span>
                     </div>
                     <p class="kaartTekst">{{ item.tekst }}</p>
-                    <!-- <button class="verwijderKnop" aria-label="Verwijder feedback" @click="openVerwijderPopup(item.id)">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                            <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12h-11L5 9zm5-6h4v2h-4V3z" />
-                        </svg>
-                    </button> -->
                 </div>
             </main>
 
