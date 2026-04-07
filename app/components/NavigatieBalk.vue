@@ -7,7 +7,7 @@ const kleurActief = computed(() => isDocent.value ? '#39dea1' : '#ff9408')
 
 const paginas = computed(() => ({
     dashboard: rolPrefix.value,
-    feedback: `${rolPrefix.value}/studentlist`,
+    feedback: `${rolPrefix.value}/feedback`,
     profiel: `${rolPrefix.value}/profiel`,
 }))
 
