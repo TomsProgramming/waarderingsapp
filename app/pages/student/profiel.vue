@@ -3,6 +3,8 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
 const naam = "JORDEN GIELEN"
 const rol = "STUDENT"
+
+const { themaKleur, themaKleurDonker } = useThema()
 </script>
 
 <template>
@@ -37,8 +39,8 @@ const rol = "STUDENT"
                         <p>THEMA</p>
 
                         <div class="thema-opties">
-                            <div class="kleur oranje"></div>
-                            <div class="kleur wit"></div>
+                            <div class="kleur oranje" @click="themaKleur = '#FF9408'"></div>
+                            <div class="kleur wit" @click="themaKleur = '#3ccf91'"></div>
                         </div>
                     </div>
                 </div>
@@ -78,13 +80,13 @@ const rol = "STUDENT"
 }
 
 .header h1 {
-    color: #cb7504;
+    color: v-bind(themaKleurDonker);
     font-size: 22px;
     margin: 0;
 }
 
 .header h2 {
-    color: #ff9408;
+    color: v-bind(themaKleur);
     font-size: 17px;
     margin: 0;
 }
@@ -94,7 +96,7 @@ const rol = "STUDENT"
     flex: 1;
     display: flex;
 
-    background: linear-gradient(180deg, #ff9408, #ff9408);
+    background: linear-gradient(180deg, v-bind(themaKleur), v-bind(themaKleur));
 
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
@@ -138,7 +140,7 @@ const rol = "STUDENT"
 
     padding: 14px;
 
-    background-color: #cb7504;
+    background-color: v-bind(themaKleurDonker);
     color: white;
 
     border-radius: 8px;
@@ -168,7 +170,7 @@ const rol = "STUDENT"
 
     padding: 15px;
 
-    background-color: #cb7504;
+    background-color: v-bind(themaKleurDonker);
 
     border-radius: 8px;
 
@@ -194,6 +196,13 @@ const rol = "STUDENT"
     height: 25px;
 
     border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kleur:hover {
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .oranje {
@@ -202,14 +211,13 @@ const rol = "STUDENT"
 
 .wit {
     background-color: #3ccf91;
-    border: 2px solid white;
 }
 
 .QRcode {
     width: 220px;
     padding: 0px 12px 12px 12px;
     text-align: center;
-    background-color: #cb7504;
+    background-color: v-bind(themaKleurDonker);
     border-radius: 8px;
     color: white;
     font-weight: 500;
@@ -221,7 +229,7 @@ const rol = "STUDENT"
     border-radius: 30px;
     border: 0;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
-    color: #FF9408;
+    color: v-bind(themaKleur);
     font-size: 15px;
 }
 
@@ -236,7 +244,7 @@ const rol = "STUDENT"
     border-radius: 10px;
     cursor: pointer;
 
-    background-color: #cb7504;
+    background-color: v-bind(themaKleurDonker);
     color: white;
 
     font-weight: lighter;

@@ -1,6 +1,8 @@
 <script setup>
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
+const { themaKleur } = useThema()
+
 const actieveTab = ref('docent')
 
 const feedbackItems = ref([
@@ -107,7 +109,7 @@ const bevestigVerwijder = () => {
     flex-direction: column;
     height: 100dvh;
     overflow: hidden;
-    background-color: #ff9408;
+    background-color: v-bind(themaKleur);
     position: relative;
 }
 

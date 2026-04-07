@@ -5,6 +5,8 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 const actieveTab = ref('docent')
 const klantBericht = ref("De student werkte goed samen en communiceerde duidelijk. Fijne samenwerking!")
 
+const { themaKleur, themaKleurDonker } = useThema()
+
 const onderdelen = [
     'Presenteren',
     'Organiseren',
@@ -131,7 +133,7 @@ const verstuurReview = () => {
 
     overflow: hidden;
 
-    background-color: #ff9408;
+    background-color: v-bind(themaKleur);
 }
 
 .paginaHoofd {
@@ -254,7 +256,7 @@ const verstuurReview = () => {
     padding: 8px 6% 28px;
     gap: 12px;
     scrollbar-width: thin;
-    scrollbar-color: #ff9408 transparent;
+    scrollbar-color: v-bind(themaKleur) transparent;
     background-color: white;
 }
 
@@ -263,7 +265,7 @@ const verstuurReview = () => {
 }
 
 .paginaInhoud::-webkit-scrollbar-thumb {
-    background-color: #ff9408;
+    background-color: v-bind(themaKleur);
     border-radius: 10px;
 }
 
@@ -290,7 +292,7 @@ const verstuurReview = () => {
     width: 82px;
     height: 82px;
     border-radius: 50%;
-    background-color: #ff9408;
+    background-color: v-bind(themaKleur);
     display: flex;
     align-items: center;
     justify-content: center;
