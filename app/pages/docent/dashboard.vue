@@ -1,49 +1,156 @@
 <script setup>
 import RadarChart from '~/components/RadarChart.vue'
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
+
+const actieveTab = ref('docent')
+const klantBericht = ref("De student werkte goed samen en communiceerde duidelijk. Fijne samenwerking!")
+
+const onderdelen = [
+    'Presenteren',
+    'Organiseren',
+    'Zelfstandigheid',
+    'Samenwerken',
+    'Communiceren'
+]
+
+const scores = reactive({
+    Presenteren: 2,
+    Organiseren: 1,
+    Zelfstandigheid: 4,
+    Samenwerken: 4,
+    Communiceren: 4
+})
+
+const reviewTekst = ref('')
+
+const gaTerug = () => {
+    navigateTo('/docent')
+}
+
+const gaNaarKlant = () => {
+    navigateTo('/klant/rating')
+}
+
+const verstuurReview = () => {
+    console.log('Review verstuurd', {
+        review: reviewTekst.value,
+        scores: { ...scores }
+    })
+}
 </script>
 
 <template>
     <div class="pagina">
 
         <header class="paginaHoofd">
-            <span class="dashboardTitel">DASHBOARD</span>
-            <div class="zoekBalkWrapper">
-                <svg class="zoekIcoon" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="6.5" cy="6.5" r="5.5" stroke="#8b8b8b" stroke-width="1.5" />
-                    <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="#8b8b8b" stroke-width="1.5"
-                        stroke-linecap="round" />
+            <button class="terugKnop" aria-label="Terug" @click="gaTerug">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M15 5L8 12L15 19" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <input class="zoekBalk" type="search" placeholder="Zoek naar student" />
-            </div>
+            </button>
+            <span class="dashboardTitel">DASHBOARD</span>
         </header>
 
+        <!-- Tabs -->
+        <div class="tabFotoRij">
+            <button 
+                class="tab" 
+                :class="{ tabActief: actieveTab === 'docent' }" 
+                @click="actieveTab = 'docent'">
+                Docent
+            </button>
+
+            <div class="middenFoto">
+                <div class="studentFotoRond">
+                    <span class="studentInitialen">JG</span>
+                </div>
+            </div>
+
+            <button 
+                class="tab" 
+                :class="{ tabActief: actieveTab === 'klant' }" 
+                @click="actieveTab = 'klant'">
+                Klant
+            </button>
+        </div>
+
         <div class="paginaWit">
+
+            <!-- Student info -->
+            <div class="studentKaart">
+                <div class="studentInfo">
+                    <span class="studentNaam">Jorden Gielen</span>
+                    <span class="studentNummer">210055</span>
+                    <span class="studentRichting">webdesign</span>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
             <main class="paginaInhoud">
 
-                <div class="studentKaart">
-                    <div class="studentFotoRond">
-                        <span class="studentInitialen">JG</span>
+                <!-- DOCENT VIEW -->
+                <div v-if="actieveTab === 'docent'" class="paneelInhoud">
+
+                    <div class="grafiekWrapper">
+                        <RadarChart />
                     </div>
-                    <div class="studentInfo">
-                        <span class="studentNaam">Jorden Gielen</span>
-                        <span class="studentRichting">webdesign</span>
-                    </div>
+
+                    <section class="aandachtSectie">
+                        <h2 class="aandachtTitel">AANDACHT</h2>
+                        <p class="aandachtTekst">
+                            Er zijn wat aandacht punten voor deze student. Dit zijn namelijk
+                            zelfstandigheid, communiceren en samenwerken.
+                            <br /><br />
+                            Mogelijk kan je het met een van deze studenten laten werken.
+                        </p>
+                    </section>
+
+                    <section class="reviewSectie">
+                        <label class="reviewTitel">Review</label>
+                        <textarea 
+                            v-model="reviewTekst" 
+                            class="reviewVeld"
+                            placeholder="typ hier je review">
+                        </textarea>
+                    </section>
+
+                    <section class="scoreSectie">
+                        <div v-for="onderdeel in onderdelen" :key="onderdeel" class="scoreRij">
+                            <span class="scoreNaam">{{ onderdeel }}</span>
+                            <div class="cirkels">
+                                <button 
+                                    v-for="i in 5" 
+                                    :key="`${onderdeel}-${i}`"
+                                    type="button"
+                                    class="cirkel"
+                                    :class="{ gevuld: i <= (scores[onderdeel] || 0) }"
+                                    @click="scores[onderdeel] = i">
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <button class="verstuurKnop" @click="verstuurReview">
+                        Versturen
+                    </button>
+
                 </div>
 
-                <div class="grafiekWrapper">
-                    <RadarChart />
-                </div>
+                <!-- KLANT VIEW -->
+                <div v-else class="paneelInhoud">
 
-                <section class="aandachtSectie">
-                    <h2 class="aandachtTitel">AANDACHT</h2>
-                    <p class="aandachtTekst">
-                        Er zijn wat aandacht punten voor deze student. Dit zijn namelijk
-                        zelfstandigheid, communiceren en samenwerken.
-                        <br /><br />
-                        Mogelijk kan je het met een van deze studenten laten werken.
-                    </p>
-                </section>
+                    <div class="grafiekWrapper">
+                        <RadarChart />
+                    </div>
+
+                    <section class="klantBericht">
+                        <h2 class="klantTitel">Feedback van klant</h2>
+                        <p class="klantTekst">
+                            {{ klantBericht }}
+                        </p>
+                    </section>
+
+                </div>
 
             </main>
 
@@ -69,9 +176,9 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 .paginaHoofd {
     flex-shrink: 0;
     display: flex;
-    flex-direction: column;
-    gap: clamp(20px, 6vw, 32px);
-    padding: 4vh 10% 4vh;
+    align-items: center;
+    gap: 8px;
+    padding: 4vh 5% 3vh;
 }
 
 .dashboardTitel {
@@ -82,88 +189,141 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
     text-transform: uppercase;
 }
 
-/* ===== Zoekbalk ===== */
-.zoekBalkWrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: #ffffff;
-    border-radius: 18px;
-    padding: 0 16px;
-    height: 35px;
-    width: 100%;
-    margin-top: auto;
-}
-
-.zoekIcoon {
-    flex-shrink: 0;
-    width: 14px;
-    height: 14px;
-}
-
-.zoekBalk {
-    flex: 1;
+.terugKnop {
+    background: none;
     border: none;
-    outline: none;
-    background: transparent;
+    color: #ffffff;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    line-height: 0;
+    cursor: pointer;
+}
+
+.tabFotoRij {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 12%;
+    position: relative;
+    margin-bottom: -9px;
+    min-height: 46px;
+}
+
+.middenFoto {
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    transform: translateX(-50%);
+    z-index: 6;
+}
+
+.tab {
+    border: none;
+    height: 32px;
+    min-width: 96px;
+    border-radius: 12px 12px 0 0;
+    background: #dedede;
+    color: #2a2a2a;
     font-family: 'Inter', sans-serif;
-    font-size: clamp(11px, 3.5vw, 13px);
-    color: #313131;
+    font-size: 18px;
+    font-weight: 400;
+    cursor: pointer;
+    /* z-index: 4; */
 }
 
-.zoekBalk::placeholder {
-    color: #8b8b8b;
+.tabActief {
+    background: #ffffff;
 }
 
-.zoekBalk::-webkit-search-cancel-button {
-    display: none;
-}
-
-/* ===== Witte kaart ===== */
 .paginaWit {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
+    background-color: #ebebeb;
     border-radius: 16px 16px 0 0;
     overflow: hidden;
     min-height: 0;
+    position: relative;
 }
 
-/* ===== Inhoud ===== */
+.klantBericht {
+    background: #f5f6f7;
+    padding: 20px;
+    border-radius: 14px;
+}
+
+.klantTitel {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.klantTekst {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #313131;
+}
+
 .paginaInhoud {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-y: auto;
     min-height: 0;
-    padding-top: 5%;
+    padding: 8px 6% 28px;
+    gap: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: #39dea1 transparent;
+    background-color: white;
+}
+
+.paginaInhoud::-webkit-scrollbar {
+    width: 4px;
+}
+
+.paginaInhoud::-webkit-scrollbar-thumb {
+    background-color: #39dea1;
+    border-radius: 10px;
+}
+
+.paneelInhoud {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 /* ===== Student kaart ===== */
 .studentKaart {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding: 0 6%;
+    gap: 8px;
+    width: 100%;
+    background: #ffffff;
+    padding: 36px 0 10px;
     flex-shrink: 0;
+    z-index: 3;
 }
 
 .studentFotoRond {
     flex-shrink: 0;
-    width: clamp(56px, 18vw, 68px);
-    height: clamp(56px, 18vw, 68px);
+    width: 82px;
+    height: 82px;
     border-radius: 50%;
     background-color: #39dea1;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 3px solid #f2f2f2;
+    margin-top: 0;
 }
 
 .studentInitialen {
     color: #ffffff;
     font-family: 'Inter', sans-serif;
-    font-size: clamp(16px, 5vw, 20px);
+    font-size: clamp(20px, 5vw, 24px);
     font-weight: 600;
     text-transform: uppercase;
 }
@@ -171,31 +331,39 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 .studentInfo {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 1px;
+    text-align: center;
 }
 
 .studentNaam {
     color: #000000;
     font-family: 'Inter', sans-serif;
-    font-size: clamp(13px, 4vw, 15px);
+    font-size: clamp(29px, 6vw, 34px);
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+.studentNummer {
+    color: #212121;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(15px, 4.2vw, 18px);
     font-weight: 400;
 }
 
 .studentRichting {
     color: #000000;
     font-family: 'Inter', sans-serif;
-    font-size: clamp(10px, 3.2vw, 12px);
+    font-size: clamp(12px, 3.6vw, 15px);
     font-weight: 400;
 }
 
 /* ===== Radar grafiek ===== */
 .grafiekWrapper {
-    align-self: center;
-    width: 72%;
-    max-width: 280px;
+    width: 80%;
+    max-width: 310px;
     aspect-ratio: 1;
     flex-shrink: 0;
-    margin: 6% 0;
+    margin: 6px auto 10px;
     position: relative;
 }
 
@@ -207,10 +375,9 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
 /* ===== Aandacht sectie ===== */
 .aandachtSectie {
     background-color: #f5f6f7;
-    padding: 5% 6%;
-    margin-top: auto;
+    padding: 20px 18px;
+    border-radius: 14px;
     flex-shrink: 0;
-    overflow-y: auto;
 }
 
 .aandachtTitel {
@@ -228,5 +395,84 @@ import NavigatieBalk from '~/components/NavigatieBalk.vue'
     color: #313131;
     line-height: 1.65;
     margin: 0;
+}
+
+.reviewSectie {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.reviewTitel {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(28px, 6vw, 34px);
+    color: #1e1e1e;
+}
+
+.reviewVeld {
+    border: none;
+    border-radius: 12px;
+    min-height: 96px;
+    background: #dcdcdc;
+    resize: vertical;
+    padding: 12px;
+    font-family: 'Inter', sans-serif;
+    color: #212121;
+}
+
+.reviewVeld::placeholder {
+    color: #acacac;
+}
+
+.scoreSectie {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 4px;
+}
+
+.scoreRij {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+}
+
+.scoreNaam {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(23px, 6.2vw, 32px);
+    color: #212121;
+}
+
+.cirkels {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cirkel {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 1.7px solid #39dea1;
+    background: transparent;
+    cursor: pointer;
+}
+
+.cirkel.gevuld {
+    background: #39dea1;
+}
+
+.verstuurKnop {
+    margin-top: 14px;
+    border: none;
+    border-radius: 6px;
+    background: #39dea1;
+    color: #ffffff;
+    width: 100%;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
 }
 </style>

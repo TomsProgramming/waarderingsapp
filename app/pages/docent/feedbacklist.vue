@@ -1,6 +1,8 @@
 <script setup>
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
+const actieveTab = ref('docent')
+
 const feedbackItems = ref([
     {
         id: 1,
@@ -67,10 +69,22 @@ const bevestigVerwijder = () => {
             <span class="docentNaam">Mariska Rooth</span>
         </header>
 
+        <div class="tabs">
+            <button :class="{ actief: actieveTab === 'docent' }" @click="actieveTab = 'docent'">
+                Docent
+            </button>
+
+            <button :class="{ actief: actieveTab === 'klant' }" @click="actieveTab = 'klant'">
+                Klant
+            </button>
+        </div>
+
         <div class="paginaWit">
             <main class="paginaInhoud">
-                <div v-for="item in feedbackItems" :key="item.id" class="feedbackKaart"
-                    :class="{ feedbackKaartActief: item.actief }">
+                <div v-for="item in feedbackItems" :key="item.id" class="feedbackKaart" :class="[
+                    { feedbackKaartActief: item.actief && actieveTab === 'docent' },
+                    { klantWeergave: actieveTab === 'klant' }
+                ]">
                     <div class="kaartKop">
                         <span class="projectNaam">{{ item.project }}</span>
                         <span class="klantNaam">{{ item.klant }}</span>
@@ -126,6 +140,52 @@ const bevestigVerwijder = () => {
     padding: 7vh 10% 5vh;
 }
 
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+
+    height: 33px;
+}
+
+.tabs button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px 12px 0 0;
+    background: #e5e5e5;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+}
+
+.tabs button.actief {
+    background: #ffffff;
+    font-weight: 600;
+}
+
+.klantWeergave {
+    background-color: #f1f2f3;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.klantWeergave .kaartKop {
+    margin-bottom: 6px;
+}
+
+.klantWeergave .projectNaam,
+.klantWeergave .klantNaam {
+    font-weight: 700;
+}
+
+.klantWeergave .kaartTekst {
+    margin-bottom: 20px;
+}
+
+.klantWeergave .verwijderKnop {
+    bottom: 8px;
+    right: 10px;
+}
+
 .feedbackTitel {
     color: #ffffff;
     font-family: 'Inter', sans-serif;
@@ -164,7 +224,7 @@ const bevestigVerwijder = () => {
 
 .feedbackKaart {
     background-color: #f5f6f7;
-    border-radius: 6px;
+    /* border-radius: 6px; */
     padding: 14px 14px 10px;
     position: relative;
     flex-shrink: 0;

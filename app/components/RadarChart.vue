@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
 import {
     Chart,
     RadarController,
@@ -26,24 +26,29 @@ Chart.register(
 )
 
 const canvas = ref(null)
+let grafiek = null
 
 onMounted(() => {
-    new Chart(canvas.value, {
+    grafiek = new Chart(canvas.value, {
         type: 'radar',
         data: {
             labels: ['Vakkundigheid', 'Productie', 'Complexiteit', 'Zelfregie', 'Samenwerken'],
             datasets: [
                 {
                     label: '',
-                    data: [1, 2, 2, 3, 1],
+                    data: [2, 3, 3, 4, 4],
                     fill: true,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgb(54, 162, 235)',
-                    pointBackgroundColor: 'rgb(54, 162, 235)'
+                    backgroundColor: 'rgba(255, 170, 70, 0.62)',
+                    borderColor: '#e58b00',
+                    pointRadius: 4,
+                    pointHoverRadius: 4,
+                    pointBackgroundColor: ['#ff9408', '#39d4bd', '#f35695', '#6049d8', '#0b79f2'],
+                    pointBorderWidth: 0
                 }
             ]
         },
         options: {
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: false
@@ -51,12 +56,31 @@ onMounted(() => {
             },
             scales: {
                 r: {
+                    angleLines: {
+                        color: '#333333'
+                    },
+                    grid: {
+                        color: '#333333'
+                    },
+                    pointLabels: {
+                        display: false
+                    },
+                    ticks: {
+                        display: false,
+                        stepSize: 1
+                    },
                     min: 0,
-                    max: 3
+                    max: 5
                 }
             }
         }
 
     })
+})
+
+onBeforeUnmount(() => {
+    if (grafiek) {
+        grafiek.destroy()
+    }
 })
 </script>

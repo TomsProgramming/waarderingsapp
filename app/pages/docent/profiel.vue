@@ -10,7 +10,7 @@ const rol = "DOCENT"
 
         <div class="header">
             <h1>PROFIEL</h1>
-            <h2>Docent</h2>
+            <h2>DOCENT</h2>
         </div>
         <div class="groen-vlak">
             <div class="body">
@@ -74,13 +74,13 @@ const rol = "DOCENT"
 
 .header h1 {
     color: #1db47e;
-    font-size: 18px;
+    font-size: 22px;
     margin: 0;
 }
 
 .header h2 {
     color: #6ee7b7;
-    font-size: 14px;
+    font-size: 17px;
     margin: 0;
 }
 
@@ -93,7 +93,7 @@ const rol = "DOCENT"
 
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
-    
+
     padding-top: 40px;
 }
 
