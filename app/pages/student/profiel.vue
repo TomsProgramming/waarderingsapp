@@ -100,6 +100,10 @@ const { themaKleur, themaKleurDonker } = useThema()
                     <img src="/img/copy.png" alt="Kopiëren" />
                 </button>
 
+                <button class="closeBtn" @click="showQrPopup = false">
+                    ✕
+                </button>
+
                 <button class="shareBtn" @click="shareQr">
                     <img src="/img/share.png" alt="Delen" />
                 </button>
@@ -416,5 +420,28 @@ const { themaKleur, themaKleurDonker } = useThema()
 .copyBtn:hover,
 .shareBtn:hover {
     transform: scale(1.08);
+}
+
+.closeBtn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 22px;
+
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    border-radius: 50%;
+    background-color: v-bind(themaKleurDonker);
+    color: white;
+
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.closeBtn:hover {
+    transform: translateX(-50%) scale(1.08);
 }
 </style>
