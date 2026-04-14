@@ -1,8 +1,35 @@
 <script setup>
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
+import { ref } from 'vue'
+import QrcodeVue from 'qrcode.vue'
+
+const showQrPopup = ref(false)
+
+const qrLink = "http://localhost:3000/rating"
+
 const naam = "JORDEN GIELEN"
 const rol = "STUDENT"
+
+const shareQr = async () => {
+
+    const link = "http://10.16.33.221:3000/klant/rating"
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: "Beoordeling",
+                text: "Geef hier je beoordeling:",
+                url: link
+            })
+        } catch (error) {
+            console.log("Delen geannuleerd")
+        }
+    } else {
+        await navigator.clipboard.writeText(link)
+        alert("Link gekopieerd!")
+    }
+}
 
 const { themaKleur, themaKleurDonker } = useThema()
 </script>
@@ -47,7 +74,7 @@ const { themaKleur, themaKleurDonker } = useThema()
 
                 <div class="QRcode">
                     <p>Net je klantgesprek gehad? Hier is de QR-code voor de beoordeling</p>
-                    <button>Haal code op</button>
+                    <button @click="showQrPopup = true">Haal code op</button>
                 </div>
 
                 <button class="uitloggen">
@@ -61,10 +88,33 @@ const { themaKleur, themaKleurDonker } = useThema()
             <NavigatieBalk />
         </div>
 
+        <div v-if="showQrPopup" class="overlay">
+            <div class="popup">
+
+                <h3>QR code</h3>
+                <p>Je kan deze doorsturen, kopiëren en of een screenshot maken.</p>
+
+                <QrcodeVue value="http://10.16.33.221:3000/klant/rating" :size="180" />
+
+                <button class="copyBtn">
+                    <img src="/img/copy.png" alt="Kopiëren" />
+                </button>
+
+                <button class="shareBtn" @click="shareQr">
+                    <img src="/img/share.png" alt="Delen" />
+                </button>
+
+            </div>
+        </div>
+
     </div>
 </template>
 
 <style scoped>
+.popup h3 {
+    font-family: "Inter", sans-serif;
+}
+
 .pagina {
     min-height: 100vh;
     background-color: #f2f2f2;
@@ -202,7 +252,7 @@ const { themaKleur, themaKleurDonker } = useThema()
 
 .kleur:hover {
     transform: scale(1.15);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .oranje {
@@ -221,6 +271,7 @@ const { themaKleur, themaKleurDonker } = useThema()
     border-radius: 8px;
     color: white;
     font-weight: 500;
+    font-family: "Inter", sans-serif;
 }
 
 .QRcode button {
@@ -231,6 +282,15 @@ const { themaKleur, themaKleurDonker } = useThema()
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
     color: v-bind(themaKleur);
     font-size: 15px;
+    font-family: "Inter", sans-serif;
+}
+
+.popup h3 {
+    font-family: "Inter", sans-serif;
+}
+
+.popup p {
+    font-family: "Inter", sans-serif;
 }
 
 .uitloggen {
@@ -259,5 +319,102 @@ const { themaKleur, themaKleurDonker } = useThema()
 .footer {
     background-color: #f2f2f2;
     font-family: "Inter", sans-serif;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+}
+
+.popup {
+    position: relative;
+
+    width: 328px;
+    min-height: 520px;
+
+    background: white;
+    border-radius: 28px;
+
+    padding: 22px 20px 80px 20px;
+
+    text-align: center;
+    font-family: "Inter", sans-serif;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.popup h3 {
+    margin: 0;
+    font-size: 38px;
+    font-weight: 700;
+    color: #111;
+}
+
+.popup p {
+    margin-top: 12px;
+    margin-bottom: 25px;
+
+    font-size: 24px;
+    line-height: 1.25;
+    color: #333;
+}
+
+/* QR code netjes in midden */
+.popup canvas,
+.popup svg {
+    display: block;
+    margin: 0 auto;
+}
+
+/* COPY knop linksonder */
+.copyBtn {
+    position: absolute;
+    left: 28px;
+    bottom: 22px;
+
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.copyBtn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* SHARE knop rechtsonder */
+.shareBtn {
+    position: absolute;
+    right: 28px;
+    bottom: 22px;
+
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.shareBtn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.copyBtn:hover,
+.shareBtn:hover {
+    transform: scale(1.08);
 }
 </style>
