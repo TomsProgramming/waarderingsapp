@@ -6,30 +6,36 @@ import QrcodeVue from 'qrcode.vue'
 
 const showQrPopup = ref(false)
 
-const qrLink = "http://localhost:3000/rating"
-
 const naam = "JORDEN GIELEN"
 const rol = "STUDENT"
 
+const qrLink = "http://10.16.33.221:3000/klant/rating"
+
 const shareQr = async () => {
-
-    const link = "http://10.16.33.221:3000/klant/rating"
-
     if (navigator.share) {
         try {
             await navigator.share({
                 title: "Beoordeling",
                 text: "Geef hier je beoordeling:",
-                url: link
+                url: qrLink
             })
         } catch (error) {
             console.log("Delen geannuleerd")
         }
     } else {
-        await navigator.clipboard.writeText(link)
-        alert("Link gekopieerd!")
+        copyQrLink()
     }
 }
+
+const copyQrLink = async () => {
+    try {
+        await navigator.clipboard.writeText(qrLink)
+        alert("Link gekopieerd!")
+    } catch (error) {
+        alert("Kopiëren mislukt.")
+    }
+}
+
 
 const { themaKleur, themaKleurDonker } = useThema()
 </script>
@@ -96,7 +102,7 @@ const { themaKleur, themaKleurDonker } = useThema()
 
                 <QrcodeVue value="http://10.16.33.221:3000/klant/rating" :size="180" />
 
-                <button class="copyBtn">
+                <button class="copyBtn" @click="copyQrLink">
                     <img src="/img/copy.png" alt="Kopiëren" />
                 </button>
 
