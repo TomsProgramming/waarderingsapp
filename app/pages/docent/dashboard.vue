@@ -2,42 +2,123 @@
 import RadarChart from '~/components/RadarChart.vue'
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
-const actieveTab = ref('docent')
-const klantBericht = ref("De student werkte goed samen en communiceerde duidelijk. Fijne samenwerking!")
-
+const route = useRoute()
 const { themaKleur, themaKleurDonker } = useDocentThema()
 
+const studentId = computed(() => {
+    const q = route.query.student
+    return q ? Number(q) : null
+})
+
+const student = ref(null)
+const latest = ref({ teacher: null, customer: null })
+const actieveTab = ref('docent')
+const reviewTekst = ref('')
+const projectNaam = ref('')
+const bezig = ref(false)
+const foutmelding = ref('')
+
 const onderdelen = [
-    'Presenteren',
-    'Organiseren',
-    'Zelfstandigheid',
-    'Samenwerken',
-    'Communiceren'
+    { label: 'Presenteren', key: 'present' },
+    { label: 'Organiseren', key: 'organise' },
+    { label: 'Zelfstandigheid', key: 'independence' },
+    { label: 'Samenwerken', key: 'collaborate' },
+    { label: 'Communiceren', key: 'communicate' }
 ]
 
 const scores = reactive({
-    Presenteren: 2,
-    Organiseren: 1,
-    Zelfstandigheid: 4,
-    Samenwerken: 4,
-    Communiceren: 4
+    present: 0,
+    organise: 0,
+    independence: 0,
+    collaborate: 0,
+    communicate: 0
 })
 
-const reviewTekst = ref('')
+const volledigeNaam = computed(() =>
+    student.value ? `${student.value.first_name} ${student.value.last_name}`.trim() : ''
+)
 
-const gaTerug = () => {
+const initialen = computed(() => {
+    if (!student.value) return ''
+    const a = (student.value.first_name || '').charAt(0)
+    const b = (student.value.last_name || '').charAt(0)
+    return (a + b).toUpperCase()
+})
+
+const radarScores = computed(() => {
+    if (actieveTab.value === 'docent') {
+        return [scores.present, scores.organise, scores.independence, scores.collaborate, scores.communicate]
+    }
+    const r = latest.value.customer
+    return r ? [r.present, r.organise, r.independence, r.collaborate, r.communicate] : [0, 0, 0, 0, 0]
+})
+
+async function laadStudent() {
+    if (!studentId.value) return
+    try {
+        const data = await $fetch(`/api/students/${studentId.value}`)
+        student.value = data.student
+    } catch {
+        student.value = null
+    }
+}
+
+async function laadLatest() {
+    if (!studentId.value) return
+    try {
+        const data = await $fetch('/api/reviews/latest', {
+            params: { student: studentId.value }
+        })
+        latest.value = data
+        const t = data.teacher
+        if (t) {
+            scores.present = t.present
+            scores.organise = t.organise
+            scores.independence = t.independence
+            scores.collaborate = t.collaborate
+            scores.communicate = t.communicate
+            reviewTekst.value = t.review || ''
+            projectNaam.value = t.project_name || ''
+        }
+    } catch {
+        latest.value = { teacher: null, customer: null }
+    }
+}
+
+onMounted(async () => {
+    await Promise.all([laadStudent(), laadLatest()])
+})
+
+function gaTerug() {
     navigateTo('/docent')
 }
 
-const gaNaarKlant = () => {
-    navigateTo('/klant/rating')
-}
-
-const verstuurReview = () => {
-    console.log('Review verstuurd', {
-        review: reviewTekst.value,
-        scores: { ...scores }
-    })
+async function verstuurReview() {
+    if (!studentId.value) return
+    foutmelding.value = ''
+    bezig.value = true
+    try {
+        await $fetch('/api/reviews', {
+            method: 'POST',
+            body: {
+                student_id: studentId.value,
+                role: 'teacher',
+                present: scores.present,
+                organise: scores.organise,
+                independence: scores.independence,
+                collaborate: scores.collaborate,
+                communicate: scores.communicate,
+                review: reviewTekst.value,
+                project_name: projectNaam.value || null
+            }
+        })
+        await laadLatest()
+        alert('Review opgeslagen')
+    } catch (e) {
+        foutmelding.value = e?.data?.message || 'Opslaan mislukt'
+    } finally {
+        bezig.value = false
+    }
 }
 </script>
 
@@ -53,103 +134,78 @@ const verstuurReview = () => {
             <span class="dashboardTitel">DASHBOARD</span>
         </header>
 
-        <!-- Tabs -->
         <div class="tabFotoRij">
-            <button 
-                class="tab" 
-                :class="{ tabActief: actieveTab === 'docent' }" 
-                @click="actieveTab = 'docent'">
+            <button class="tab" :class="{ tabActief: actieveTab === 'docent' }" @click="actieveTab = 'docent'">
                 Docent
             </button>
 
             <div class="middenFoto">
                 <div class="studentFotoRond">
-                    <span class="studentInitialen">JG</span>
+                    <img v-if="student?.profile_picture" :src="student.profile_picture" :alt="volledigeNaam" class="studentFotoImg" />
+                    <span v-else class="studentInitialen">{{ initialen }}</span>
                 </div>
             </div>
 
-            <button 
-                class="tab" 
-                :class="{ tabActief: actieveTab === 'klant' }" 
-                @click="actieveTab = 'klant'">
+            <button class="tab" :class="{ tabActief: actieveTab === 'klant' }" @click="actieveTab = 'klant'">
                 Klant
             </button>
         </div>
 
         <div class="paginaWit">
 
-            <!-- Student info -->
             <div class="studentKaart">
                 <div class="studentInfo">
-                    <span class="studentNaam">Jorden Gielen</span>
-                    <span class="studentNummer">210055</span>
-                    <span class="studentRichting">webdesign</span>
+                    <span class="studentNaam">{{ volledigeNaam }}</span>
+                    <span class="studentNummer">{{ student?.student_number }}</span>
                 </div>
             </div>
 
-            <!-- MAIN CONTENT -->
             <main class="paginaInhoud">
 
-                <!-- DOCENT VIEW -->
                 <div v-if="actieveTab === 'docent'" class="paneelInhoud">
 
                     <div class="grafiekWrapper">
-                        <RadarChart />
+                        <RadarChart :scores="radarScores" :kleur="themaKleur" />
                     </div>
-
-                    <section class="aandachtSectie">
-                        <h2 class="aandachtTitel">AANDACHT</h2>
-                        <p class="aandachtTekst">
-                            Er zijn wat aandacht punten voor deze student. Dit zijn namelijk
-                            zelfstandigheid, communiceren en samenwerken.
-                            <br /><br />
-                            Mogelijk kan je het met een van deze studenten laten werken.
-                        </p>
-                    </section>
 
                     <section class="reviewSectie">
                         <label class="reviewTitel">Review</label>
-                        <textarea 
-                            v-model="reviewTekst" 
-                            class="reviewVeld"
-                            placeholder="typ hier je review">
-                        </textarea>
+                        <input v-model="projectNaam" class="projectVeld" placeholder="Project (optioneel)" />
+                        <textarea v-model="reviewTekst" class="reviewVeld" placeholder="typ hier je review" />
                     </section>
 
                     <section class="scoreSectie">
-                        <div v-for="onderdeel in onderdelen" :key="onderdeel" class="scoreRij">
-                            <span class="scoreNaam">{{ onderdeel }}</span>
+                        <div v-for="o in onderdelen" :key="o.key" class="scoreRij">
+                            <span class="scoreNaam">{{ o.label }}</span>
                             <div class="cirkels">
-                                <button 
-                                    v-for="i in 5" 
-                                    :key="`${onderdeel}-${i}`"
-                                    type="button"
-                                    class="cirkel"
-                                    :class="{ gevuld: i <= (scores[onderdeel] || 0) }"
-                                    @click="scores[onderdeel] = i">
-                                </button>
+                                <button v-for="i in 5" :key="`${o.key}-${i}`" type="button" class="cirkel"
+                                    :class="{ gevuld: i <= scores[o.key] }" @click="scores[o.key] = i" />
                             </div>
                         </div>
                     </section>
 
-                    <button class="verstuurKnop" @click="verstuurReview">
-                        Versturen
+                    <p v-if="foutmelding" class="fout">{{ foutmelding }}</p>
+
+                    <button class="verstuurKnop" :disabled="bezig" @click="verstuurReview">
+                        {{ bezig ? 'Bezig…' : 'Versturen' }}
                     </button>
 
                 </div>
 
-                <!-- KLANT VIEW -->
                 <div v-else class="paneelInhoud">
 
                     <div class="grafiekWrapper">
-                        <RadarChart />
+                        <RadarChart :scores="radarScores" :kleur="themaKleur" />
                     </div>
 
-                    <section class="klantBericht">
-                        <h2 class="klantTitel">Feedback van klant</h2>
-                        <p class="klantTekst">
-                            {{ klantBericht }}
-                        </p>
+                    <section v-if="latest.customer" class="klantBericht">
+                        <h2 class="klantTitel">{{ (latest.customer.customer_name || 'Klant').toUpperCase() }}</h2>
+                        <p class="klantTekst">{{ latest.customer.review || 'Geen toelichting.' }}</p>
+                    </section>
+
+                    <section v-else class="klantBericht">
+                        <h2 class="klantTitel">Nog geen klant-review</h2>
+                        <p class="klantTekst">Zodra een klant via de QR-code een review achterlaat verschijnt hij hier.</p>
                     </section>
 
                 </div>
@@ -165,7 +221,6 @@ const verstuurReview = () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:wght@400&display=swap');
 
-/* ===== Pagina layout ===== */
 .pagina {
     display: flex;
     flex-direction: column;
@@ -174,7 +229,6 @@ const verstuurReview = () => {
     background-color: v-bind(themaKleur);
 }
 
-/* ===== Header ===== */
 .paginaHoofd {
     flex-shrink: 0;
     display: flex;
@@ -231,7 +285,6 @@ const verstuurReview = () => {
     font-size: 18px;
     font-weight: 400;
     cursor: pointer;
-    /* z-index: 4; */
 }
 
 .tabActief {
@@ -281,22 +334,12 @@ const verstuurReview = () => {
     background-color: white;
 }
 
-.paginaInhoud::-webkit-scrollbar {
-    width: 4px;
-}
-
-.paginaInhoud::-webkit-scrollbar-thumb {
-    background-color: v-bind(themaKleur);
-    border-radius: 10px;
-}
-
 .paneelInhoud {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* ===== Student kaart ===== */
 .studentKaart {
     display: flex;
     flex-direction: column;
@@ -319,7 +362,13 @@ const verstuurReview = () => {
     align-items: center;
     justify-content: center;
     border: 3px solid #f2f2f2;
-    margin-top: 0;
+    overflow: hidden;
+}
+
+.studentFotoImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .studentInitialen {
@@ -352,14 +401,6 @@ const verstuurReview = () => {
     font-weight: 400;
 }
 
-.studentRichting {
-    color: #000000;
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(12px, 3.6vw, 15px);
-    font-weight: 400;
-}
-
-/* ===== Radar grafiek ===== */
 .grafiekWrapper {
     width: 80%;
     max-width: 310px;
@@ -374,31 +415,6 @@ const verstuurReview = () => {
     height: 100% !important;
 }
 
-/* ===== Aandacht sectie ===== */
-.aandachtSectie {
-    background-color: #f5f6f7;
-    padding: 20px 18px;
-    border-radius: 14px;
-    flex-shrink: 0;
-}
-
-.aandachtTitel {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(16px, 5.3vw, 20px);
-    font-weight: 400;
-    text-transform: uppercase;
-    margin: 0 0 10px;
-    color: #000000;
-}
-
-.aandachtTekst {
-    font-family: 'Montserrat', sans-serif;
-    font-size: clamp(13px, 4vw, 15px);
-    color: #313131;
-    line-height: 1.65;
-    margin: 0;
-}
-
 .reviewSectie {
     display: flex;
     flex-direction: column;
@@ -407,8 +423,17 @@ const verstuurReview = () => {
 
 .reviewTitel {
     font-family: 'Inter', sans-serif;
-    font-size: clamp(28px, 6vw, 34px);
+    font-size: clamp(22px, 5vw, 28px);
     color: #1e1e1e;
+}
+
+.projectVeld {
+    border: none;
+    border-radius: 10px;
+    background: #ececec;
+    padding: 10px 12px;
+    font-family: 'Inter', sans-serif;
+    color: #212121;
 }
 
 .reviewVeld {
@@ -422,7 +447,8 @@ const verstuurReview = () => {
     color: #212121;
 }
 
-.reviewVeld::placeholder {
+.reviewVeld::placeholder,
+.projectVeld::placeholder {
     color: #acacac;
 }
 
@@ -442,7 +468,7 @@ const verstuurReview = () => {
 
 .scoreNaam {
     font-family: 'Inter', sans-serif;
-    font-size: clamp(23px, 6.2vw, 32px);
+    font-size: clamp(18px, 5vw, 24px);
     color: #212121;
 }
 
@@ -465,6 +491,13 @@ const verstuurReview = () => {
     background: v-bind(themaKleur);
 }
 
+.fout {
+    color: #c62828;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    margin: 0;
+}
+
 .verstuurKnop {
     margin-top: 14px;
     border: none;
@@ -476,5 +509,10 @@ const verstuurReview = () => {
     display: grid;
     place-items: center;
     cursor: pointer;
+}
+
+.verstuurKnop:disabled {
+    opacity: 0.6;
+    cursor: default;
 }
 </style>

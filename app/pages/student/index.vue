@@ -2,43 +2,48 @@
 import RadarChart from '~/components/RadarChart.vue'
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
-const actieveTab = ref('docent')
-const klantBericht = ref("De student werkte goed samen en communiceerde duidelijk. Fijne samenwerking!")
-
+const { user } = useAuth()
 const { themaKleur, themaKleurDonker } = useThema()
 
-const onderdelen = [
-    'Presenteren',
-    'Organiseren',
-    'Zelfstandigheid',
-    'Samenwerken',
-    'Communiceren'
-]
+const actieveTab = ref('docent')
 
-const scores = reactive({
-    Presenteren: 2,
-    Organiseren: 1,
-    Zelfstandigheid: 4,
-    Samenwerken: 4,
-    Communiceren: 4
+const latest = ref({ teacher: null, customer: null })
+
+async function laadLatest() {
+    if (!user.value) return
+    try {
+        const data = await $fetch('/api/reviews/latest', {
+            params: { student: user.value.id }
+        })
+        latest.value = data
+    } catch {
+        latest.value = { teacher: null, customer: null }
+    }
+}
+
+onMounted(laadLatest)
+
+const actieveReview = computed(() =>
+    actieveTab.value === 'docent' ? latest.value.teacher : latest.value.customer
+)
+
+const scores = computed(() => {
+    const r = actieveReview.value
+    return r
+        ? [r.present, r.organise, r.independence, r.collaborate, r.communicate]
+        : [0, 0, 0, 0, 0]
 })
 
-const reviewTekst = ref('')
+const initialen = computed(() => {
+    if (!user.value) return ''
+    const a = (user.value.first_name || '').charAt(0)
+    const b = (user.value.last_name || '').charAt(0)
+    return (a + b).toUpperCase()
+})
 
-const gaTerug = () => {
-    navigateTo('/docent')
-}
-
-const gaNaarKlant = () => {
-    navigateTo('/klant/rating')
-}
-
-const verstuurReview = () => {
-    console.log('Review verstuurd', {
-        review: reviewTekst.value,
-        scores: { ...scores }
-    })
-}
+const volledigeNaam = computed(() =>
+    user.value ? `${user.value.first_name} ${user.value.last_name}`.trim() : ''
+)
 </script>
 
 <template>
@@ -48,7 +53,6 @@ const verstuurReview = () => {
             <h2>VOORTGANG</h2>
         </header>
 
-        <!-- Tabs -->
         <div class="tabFotoRij">
             <button class="tab" :class="{ tabActief: actieveTab === 'docent' }" @click="actieveTab = 'docent'">
                 Docent
@@ -56,7 +60,7 @@ const verstuurReview = () => {
 
             <div class="middenFoto">
                 <div class="studentFotoRond">
-                    <span class="studentInitialen">JG</span>
+                    <span class="studentInitialen">{{ initialen }}</span>
                 </div>
             </div>
 
@@ -67,53 +71,35 @@ const verstuurReview = () => {
 
         <div class="paginaWit">
 
-            <!-- Student info -->
             <div class="studentKaart">
                 <div class="studentInfo">
-                    <span class="studentNaam">Jorden Gielen</span>
-                    <span class="studentNummer">210055</span>
-                    <span class="studentRichting">webdesign</span>
+                    <span class="studentNaam">{{ volledigeNaam }}</span>
+                    <span class="studentNummer">{{ user?.student_number }}</span>
                 </div>
             </div>
 
-            <!-- MAIN CONTENT -->
             <main class="paginaInhoud">
-
-                <!-- DOCENT VIEW -->
-                <div v-if="actieveTab === 'docent'" class="paneelInhoud">
-
+                <div class="paneelInhoud">
                     <div class="grafiekWrapper">
-                        <RadarChart />
+                        <RadarChart :scores="scores" :kleur="themaKleur" />
                     </div>
 
-                    <section class="aandachtSectie">
-                        <h2 class="aandachtTitel">AANDACHT</h2>
+                    <section v-if="actieveReview" :class="actieveTab === 'docent' ? 'aandachtSectie' : 'klantBericht'">
+                        <h2 :class="actieveTab === 'docent' ? 'aandachtTitel' : 'klantTitel'">
+                            {{ actieveTab === 'docent' ? 'FEEDBACK DOCENT' : (actieveReview.customer_name || 'KLANT').toUpperCase() }}
+                        </h2>
+                        <p :class="actieveTab === 'docent' ? 'aandachtTekst' : 'klantTekst'">
+                            {{ actieveReview.review || 'Geen toelichting geschreven.' }}
+                        </p>
+                    </section>
+
+                    <section v-else class="aandachtSectie">
+                        <h2 class="aandachtTitel">Nog geen reviews</h2>
                         <p class="aandachtTekst">
-                            Er zijn wat aandacht punten voor deze student. Dit zijn namelijk
-                            zelfstandigheid, communiceren en samenwerken.
-                            <br /><br />
-                            Mogelijk kan je het met een van deze studenten laten werken.
+                            Zodra een {{ actieveTab === 'docent' ? 'docent' : 'klant' }} een review achterlaat zie je hem hier.
                         </p>
                     </section>
-
                 </div>
-
-                <!-- KLANT VIEW -->
-                <div v-else class="paneelInhoud">
-
-                    <div class="grafiekWrapper">
-                        <RadarChart />
-                    </div>
-
-                    <section class="klantBericht">
-                        <h2 class="klantTitel">JAN</h2>
-                        <p class="klantTekst">
-                            {{ klantBericht }}
-                        </p>
-                    </section>
-
-                </div>
-
             </main>
 
             <NavigatieBalk />
@@ -128,54 +114,24 @@ const verstuurReview = () => {
 .pagina {
     display: flex;
     flex-direction: column;
-
     height: 100dvh;
-
     overflow: hidden;
-
     background-color: v-bind(themaKleur);
 }
 
 .paginaHoofd {
     display: flex;
     align-items: center;
-
     flex-shrink: 0;
-
     gap: 8px;
-
     padding: 4vh 5% 3vh;
 }
 
-.paginaHoofd h2{
+.paginaHoofd h2 {
     color: white;
-
     font-family: 'inter', sans-serif;
     font-weight: 400;
-    text-transform: uppercase;  
-}
-
-.dashboardTitel {
-    color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(16px, 5.3vw, 20px);
-    font-weight: 400;
     text-transform: uppercase;
-}
-
-.terugKnop {
-    display: grid;
-    place-items: center;
-
-    background: none;
-
-    border: none;
-
-    color: #ffffff;
-
-    padding: 0;
-    line-height: 0;
-    cursor: pointer;
 }
 
 .tabFotoRij {
@@ -183,7 +139,6 @@ const verstuurReview = () => {
     justify-content: space-between;
     align-items: center;
     position: relative;
-
     padding: 0 12%;
     margin-bottom: -9px;
     min-height: 46px;
@@ -193,7 +148,6 @@ const verstuurReview = () => {
     position: absolute;
     left: 50%;
     top: 6px;
-
     transform: translateX(-50%);
     z-index: 6;
 }
@@ -217,10 +171,8 @@ const verstuurReview = () => {
 
 .paginaWit {
     flex: 1;
-
     display: flex;
     flex-direction: column;
-    
     background-color: #ebebeb;
     border-radius: 16px 16px 0 0;
     overflow: hidden;
@@ -255,18 +207,7 @@ const verstuurReview = () => {
     min-height: 0;
     padding: 8px 6% 28px;
     gap: 12px;
-    scrollbar-width: thin;
-    scrollbar-color: v-bind(themaKleur) transparent;
     background-color: white;
-}
-
-.paginaInhoud::-webkit-scrollbar {
-    width: 4px;
-}
-
-.paginaInhoud::-webkit-scrollbar-thumb {
-    background-color: v-bind(themaKleur);
-    border-radius: 10px;
 }
 
 .paneelInhoud {
@@ -297,7 +238,6 @@ const verstuurReview = () => {
     align-items: center;
     justify-content: center;
     border: 3px solid #f2f2f2;
-    margin-top: 0;
 }
 
 .studentInitialen {
@@ -330,14 +270,6 @@ const verstuurReview = () => {
     font-weight: 400;
 }
 
-.studentRichting {
-    color: #000000;
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(12px, 3.6vw, 15px);
-    font-weight: 400;
-}
-
-/* ===== Radar grafiek ===== */
 .grafiekWrapper {
     width: 80%;
     max-width: 310px;
@@ -375,24 +307,5 @@ const verstuurReview = () => {
     color: #313131;
     line-height: 1.65;
     margin: 0;
-}
-
-.cirkels {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.cirkel {
-    width: 17px;
-    height: 17px;
-    border-radius: 50%;
-    border: 1.7px solid #39dea1;
-    background: transparent;
-    cursor: pointer;
-}
-
-.cirkel.gevuld {
-    background: #39dea1;
 }
 </style>

@@ -1,10 +1,12 @@
 <script setup>
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
-const naam = "JORDEN GIELEN"
-const rol = "DOCENT"
+const { user, logout } = useAuth()
+const { themaKleur, themaKleurDonker, setKleur } = useDocentThema()
 
-const { themaKleur, themaKleurDonker } = useDocentThema()
+const volledigeNaam = computed(() =>
+    user.value ? `${user.value.first_name} ${user.value.last_name}`.trim().toUpperCase() : ''
+)
 </script>
 
 <template>
@@ -18,36 +20,25 @@ const { themaKleur, themaKleurDonker } = useDocentThema()
             <div class="body">
 
                 <div class="profielfoto">
-                    <img src="/img/glulogo.png" alt="Profielfoto" />
+                    <img :src="user?.profile_picture || '/img/glulogo.png'" alt="Profielfoto" />
                 </div>
 
-                <div class="info-blok">
-                    {{ naam }}
-                </div>
-
-                <div class="info-blok">
-                    {{ rol }}
-                </div>
-
-                <div class="info-blok">
-                    JAG
-                </div>
-
+                <div class="info-blok">{{ volledigeNaam }}</div>
+                <div class="info-blok">DOCENT</div>
+                <div class="info-blok">{{ user?.abbreviation_teacher }}</div>
 
                 <div id="thema-blok-outline">
                     <div class="thema-blok">
                         <p>THEMA</p>
 
                         <div class="thema-opties">
-                            <div class="kleur groen" @click="themaKleur = '#39dea1'"></div>
-                            <div class="kleur oranje" @click="themaKleur = '#FF9408'"></div>
+                            <div class="kleur groen" @click="setKleur('#39dea1')"></div>
+                            <div class="kleur oranje" @click="setKleur('#FF9408')"></div>
                         </div>
                     </div>
                 </div>
 
-                <button class="uitloggen">
-                    UITLOGGEN
-                </button>
+                <button class="uitloggen" @click="logout">UITLOGGEN</button>
 
             </div>
         </div>
@@ -67,10 +58,8 @@ const { themaKleur, themaKleurDonker } = useDocentThema()
     flex-direction: column;
 }
 
-/* Header */
 .header {
     padding: 25px 20px;
-
     font-family: "Inter", sans-serif;
 }
 
@@ -86,29 +75,21 @@ const { themaKleur, themaKleurDonker } = useDocentThema()
     margin: 0;
 }
 
-/* GROENE CONTAINER */
 .groen-vlak {
     flex: 1;
     display: flex;
-
     background: linear-gradient(180deg, v-bind(themaKleur), v-bind(themaKleur));
-
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
-
     padding-top: 40px;
 }
 
-/* Body inhoud */
 .body {
     display: flex;
     flex-direction: column;
     align-items: center;
-
     gap: 6px;
-
     font-family: "Inter", sans-serif;
-
     min-height: 100%;
     width: 100%;
 }
@@ -116,30 +97,23 @@ const { themaKleur, themaKleurDonker } = useDocentThema()
 .profielfoto {
     display: flex;
     justify-content: center;
-
     width: 100%;
 }
 
 .profielfoto img {
     width: 120px;
     height: 120px;
-
     border-radius: 50%;
     border: 4px solid rgba(255, 255, 255, 0.4);
-
     object-fit: cover;
 }
 
 .info-blok {
     width: 220px;
-
     padding: 14px;
-
     background-color: v-bind(themaKleurDonker);
     color: white;
-
     border-radius: 8px;
-
     letter-spacing: 1px;
     text-align: center;
     font-size: 20px;
@@ -151,7 +125,7 @@ const { themaKleur, themaKleurDonker } = useDocentThema()
     margin-right: auto;
 }
 
-#thema-blok-outline{
+#thema-blok-outline {
     display: flex;
     justify-content: center;
 }
@@ -160,15 +134,10 @@ const { themaKleur, themaKleurDonker } = useDocentThema()
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-
     width: 220px;
-
     padding: 15px;
-
     background-color: v-bind(themaKleurDonker);
-
     border-radius: 8px;
-
     text-align: center;
     color: white;
 }
@@ -182,7 +151,6 @@ const { themaKleur, themaKleurDonker } = useDocentThema()
 .thema-opties {
     display: flex;
     justify-content: center;
-
     gap: 15px;
 }
 
@@ -196,39 +164,28 @@ const { themaKleur, themaKleurDonker } = useDocentThema()
 
 .kleur:hover {
     transform: scale(1.15);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.groen {
-    background-color: #39dea1;
-}
-
-.oranje {
-    background-color: #FF9408;
-}
+.groen { background-color: #39dea1; }
+.oranje { background-color: #FF9408; }
 
 .uitloggen {
     width: 220px;
-
     margin-top: auto;
     margin-bottom: 20px;
     padding: 12px;
-
     border: none;
     border-radius: 10px;
     cursor: pointer;
-
     background-color: v-bind(themaKleurDonker);
     color: white;
-
     font-weight: lighter;
     letter-spacing: 2px;
     font-size: 19px;
 }
 
-.uitloggen:hover {
-    opacity: 0.9;
-}
+.uitloggen:hover { opacity: 0.9; }
 
 .footer {
     background-color: #f2f2f2;

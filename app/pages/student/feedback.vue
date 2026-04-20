@@ -1,66 +1,32 @@
 <script setup>
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
+const { user } = useAuth()
 const { themaKleur } = useThema()
 
 const actieveTab = ref('docent')
+const reviews = ref([])
+const laden = ref(false)
 
-const feedbackItems = ref([
-    {
-        id: 1,
-        project: 'Koffie project',
-        klant: 'Eric',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-    {
-        id: 2,
-        project: 'Project naam',
-        klant: 'Klant naam',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-    {
-        id: 3,
-        project: 'Project naam',
-        klant: 'Klant naam',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-    {
-        id: 4,
-        project: 'Project naam',
-        klant: 'Klant naam',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-    {
-        id: 5,
-        project: 'Project naam',
-        klant: 'Klant naam',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-])
-
-const teVerwijderenId = ref(null)
-const toonPopup = ref(false)
-
-const openVerwijderPopup = (id) => {
-    teVerwijderenId.value = id
-    toonPopup.value = true
+async function laad() {
+    if (!user.value) return
+    laden.value = true
+    try {
+        const data = await $fetch('/api/reviews', {
+            params: { student: user.value.id, role: actieveTab.value === 'docent' ? 'teacher' : 'customer' }
+        })
+        reviews.value = data.reviews
+    } finally {
+        laden.value = false
+    }
 }
 
-const annuleer = () => {
-    teVerwijderenId.value = null
-    toonPopup.value = false
-}
+onMounted(laad)
+watch(actieveTab, laad)
 
-const bevestigVerwijder = () => {
-    feedbackItems.value = feedbackItems.value.filter(item => item.id !== teVerwijderenId.value)
-    teVerwijderenId.value = null
-    toonPopup.value = false
-}
+const volledigeNaam = computed(() =>
+    user.value ? `${user.value.first_name} ${user.value.last_name}`.trim() : ''
+)
 </script>
 
 <template>
@@ -68,30 +34,25 @@ const bevestigVerwijder = () => {
 
         <header class="paginaHoofd">
             <span class="feedbackTitel">FEEDBACK</span>
-            <span class="docentNaam">Jorder Gielen</span>
+            <span class="docentNaam">{{ volledigeNaam }}</span>
         </header>
 
         <div class="tabs">
-            <button :class="{ actief: actieveTab === 'docent' }" @click="actieveTab = 'docent'">
-                Docent
-            </button>
-
-            <button :class="{ actief: actieveTab === 'klant' }" @click="actieveTab = 'klant'">
-                Klant
-            </button>
+            <button :class="{ actief: actieveTab === 'docent' }" @click="actieveTab = 'docent'">Docent</button>
+            <button :class="{ actief: actieveTab === 'klant' }" @click="actieveTab = 'klant'">Klant</button>
         </div>
 
         <div class="paginaWit">
             <main class="paginaInhoud">
-                <div v-for="item in feedbackItems" :key="item.id" class="feedbackKaart" :class="[
-                    { feedbackKaartActief: item.actief && actieveTab === 'docent' },
-                    { klantWeergave: actieveTab === 'klant' }
-                ]">
+                <p v-if="laden" class="leeg">Laden…</p>
+                <p v-else-if="!reviews.length" class="leeg">Nog geen reviews.</p>
+                <div v-else v-for="item in reviews" :key="item.id" class="feedbackKaart"
+                    :class="{ klantWeergave: actieveTab === 'klant' }">
                     <div class="kaartKop">
-                        <span class="projectNaam">{{ item.project }}</span>
-                        <span class="klantNaam">{{ item.klant }}</span>
+                        <span class="projectNaam">{{ item.project_name || 'Project' }}</span>
+                        <span class="klantNaam">{{ actieveTab === 'klant' ? (item.customer_name || 'Klant') : 'Docent' }}</span>
                     </div>
-                    <p class="kaartTekst">{{ item.tekst }}</p>
+                    <p class="kaartTekst">{{ item.review || '-' }}</p>
                 </div>
             </main>
 
@@ -125,7 +86,6 @@ const bevestigVerwijder = () => {
     display: flex;
     justify-content: center;
     gap: 8px;
-
     height: 33px;
 }
 
@@ -147,31 +107,6 @@ const bevestigVerwijder = () => {
     background-color: #f1f2f3;
     border-radius: 10px;
     padding: 16px;
-}
-
-.klantWeergave .kaartKop {
-    margin-bottom: 6px;
-}
-
-.klantWeergave .projectNaam,
-.klantWeergave .klantNaam {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(15px, 4.5vw, 18px);
-    font-weight: 600;
-    color: #1a1a1a;
-}
-
-.klantWeergave .kaartTekst {
-    font-family: 'Montserrat', sans-serif;
-    font-size: clamp(12px, 3.5vw, 14px);
-    color: #313131;
-    line-height: 1.5;
-    margin: 0 0 28px;
-}
-
-.klantWeergave .verwijderKnop {
-    bottom: 8px;
-    right: 10px;
 }
 
 .feedbackTitel {
@@ -210,9 +145,15 @@ const bevestigVerwijder = () => {
     min-height: 0;
 }
 
+.leeg {
+    text-align: center;
+    color: #666;
+    font-family: 'Inter', sans-serif;
+    margin-top: 24px;
+}
+
 .feedbackKaart {
     background-color: #f5f6f7;
-    /* border-radius: 6px; */
     padding: 14px 14px 10px;
     position: relative;
     flex-shrink: 0;
@@ -225,13 +166,7 @@ const bevestigVerwijder = () => {
     margin-bottom: 8px;
 }
 
-.projectNaam {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(15px, 4.5vw, 18px);
-    font-weight: 600;
-    color: #1a1a1a;
-}
-
+.projectNaam,
 .klantNaam {
     font-family: 'Inter', sans-serif;
     font-size: clamp(15px, 4.5vw, 18px);
@@ -244,99 +179,6 @@ const bevestigVerwijder = () => {
     font-size: clamp(12px, 3.5vw, 14px);
     color: #313131;
     line-height: 1.5;
-    margin: 0 0 28px;
-}
-
-.verwijderKnop {
-    position: absolute;
-    bottom: 10px;
-    right: 12px;
-    background: none;
-    border: none;
-    padding: 4px;
-    cursor: pointer;
-    color: #1a1a1a;
-    line-height: 0;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.overlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 40, 20, 0.72);
-    display: flex;
-    align-items: flex-end;
-    z-index: 100;
-}
-
-.verwijderPopup {
-    width: 100%;
-    background-color: #ffffff;
-    border-radius: 20px 20px 0 0;
-    padding: 28px 6% 40px;
-}
-
-.popupTitel {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(16px, 5vw, 19px);
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0 0 10px;
-}
-
-.popupTekst {
-    font-family: 'Montserrat', sans-serif;
-    font-size: clamp(13px, 4vw, 15px);
-    color: #313131;
-    line-height: 1.55;
-    margin: 0 0 28px;
-}
-
-.popupKnoppen {
-    display: flex;
-    gap: 12px;
-}
-
-.annuleerKnop,
-.verwijderBevestigKnop {
-    flex: 1;
-    height: 46px;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(13px, 4vw, 15px);
-    font-weight: 600;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.annuleerKnop {
-    background-color: #f5f6f7;
-    color: #313131;
-}
-
-.verwijderBevestigKnop {
-    background-color: #c4554b;
-    color: #ffffff;
-}
-
-.verwijderFade-enter-active,
-.verwijderFade-leave-active {
-    transition: opacity 0.25s ease;
-}
-
-.verwijderFade-enter-from,
-.verwijderFade-leave-to {
-    opacity: 0;
-}
-
-.verwijderOmhoog-enter-active,
-.verwijderOmhoog-leave-active {
-    transition: transform 0.3s ease;
-}
-
-.verwijderOmhoog-enter-from,
-.verwijderOmhoog-leave-to {
-    transform: translateY(100%);
+    margin: 0;
 }
 </style>

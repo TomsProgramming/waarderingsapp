@@ -1,9 +1,12 @@
 <script setup>
 const route = useRoute()
+const user = useAuthUser()
 
 const isDocent = computed(() => route.path.startsWith('/docent'))
 const rolPrefix = computed(() => isDocent.value ? '/docent' : '/student')
-const kleurActief = computed(() => isDocent.value ? '#39dea1' : '#ff9408')
+const kleurActief = computed(() =>
+    user.value?.theme_color || (isDocent.value ? '#39dea1' : '#FF9408')
+)
 
 const paginas = computed(() => ({
     dashboard: rolPrefix.value,
@@ -13,12 +16,17 @@ const paginas = computed(() => ({
 
 const isActief = (type) => {
     if (type === 'dashboard') {
-        return route.path === rolPrefix.value || route.path === rolPrefix.value + '/' || route.path === rolPrefix.value + '/dashboard'
+        return route.path === rolPrefix.value
+            || route.path === `${rolPrefix.value}/`
+            || route.path.startsWith(`${rolPrefix.value}/dashboard`)
     }
 
     if (type === 'feedback') {
-        return route.path.startsWith(`${rolPrefix.value}/studentlist`) || route.path.startsWith(`${rolPrefix.value}/feedbacklist`)
+        return route.path.startsWith(`${rolPrefix.value}/feedback`)
+            || route.path.startsWith(`${rolPrefix.value}/feedbacklist`)
+            || route.path.startsWith(`${rolPrefix.value}/studentlist`)
     }
+
     return route.path.startsWith(paginas.value[type])
 }
 </script>

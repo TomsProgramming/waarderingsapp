@@ -12,8 +12,8 @@
             <P>Welkom! Kies uw rol.</P>
 
             <div class="keuzen-knoppen-box">
-                <button class="keuzen-knop">Student</button>
-                <button class="keuzen-knop">Docent</button>
+                <button class="keuzen-knop" @click="navigateTo('/nieuwaccount/student')">Student</button>
+                <button class="keuzen-knop" @click="navigateTo('/nieuwaccount/docent')">Docent</button>
             </div>
         </div>
     </div>

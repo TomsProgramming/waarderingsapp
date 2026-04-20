@@ -1,37 +1,41 @@
 <script setup>
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
-
-import { ref } from 'vue'
 import QrcodeVue from 'qrcode.vue'
+
+const { user, logout } = useAuth()
+const { themaKleur, themaKleurDonker, setKleur } = useThema()
+const config = useRuntimeConfig()
 
 const showQrPopup = ref(false)
 
-const qrLink = "http://localhost:3000/rating"
+const qrLink = computed(() => {
+    if (!user.value) return ''
+    const base = config.public.baseUrl || (typeof window !== 'undefined' ? window.location.origin : '')
+    return `${base}/klant/rating?student=${user.value.id}`
+})
 
-const naam = "JORDEN GIELEN"
-const rol = "STUDENT"
-
-const shareQr = async () => {
-
-    const link = "http://10.16.33.221:3000/klant/rating"
-
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: "Beoordeling",
-                text: "Geef hier je beoordeling:",
-                url: link
-            })
-        } catch (error) {
-            console.log("Delen geannuleerd")
-        }
-    } else {
-        await navigator.clipboard.writeText(link)
-        alert("Link gekopieerd!")
+async function kopieer() {
+    try {
+        await navigator.clipboard.writeText(qrLink.value)
+        alert('Link gekopieerd!')
+    } catch {
+        alert('Kopiëren lukte niet')
     }
 }
 
-const { themaKleur, themaKleurDonker } = useThema()
+async function shareQr() {
+    if (navigator.share) {
+        try {
+            await navigator.share({ title: 'Beoordeling', text: 'Geef hier je beoordeling:', url: qrLink.value })
+        } catch {}
+    } else {
+        await kopieer()
+    }
+}
+
+const volledigeNaam = computed(() =>
+    user.value ? `${user.value.first_name} ${user.value.last_name}`.trim().toUpperCase() : ''
+)
 </script>
 
 <template>
@@ -45,29 +49,20 @@ const { themaKleur, themaKleurDonker } = useThema()
             <div class="body">
 
                 <div class="profielfoto">
-                    <img src="/img/glulogo.png" alt="Profielfoto" />
+                    <img :src="user?.profile_picture || '/img/glulogo.png'" alt="Profielfoto" />
                 </div>
 
-                <div class="info-blok">
-                    {{ naam }}
-                </div>
-
-                <div class="info-blok">
-                    {{ rol }}
-                </div>
-
-                <div class="info-blok">
-                    204356
-                </div>
-
+                <div class="info-blok">{{ volledigeNaam }}</div>
+                <div class="info-blok">STUDENT</div>
+                <div class="info-blok">{{ user?.student_number }}</div>
 
                 <div id="thema-blok-outline">
                     <div class="thema-blok">
                         <p>THEMA</p>
 
                         <div class="thema-opties">
-                            <div class="kleur oranje" @click="themaKleur = '#FF9408'"></div>
-                            <div class="kleur wit" @click="themaKleur = '#3ccf91'"></div>
+                            <div class="kleur oranje" @click="setKleur('#FF9408')"></div>
+                            <div class="kleur groen" @click="setKleur('#3ccf91')"></div>
                         </div>
                     </div>
                 </div>
@@ -77,9 +72,7 @@ const { themaKleur, themaKleurDonker } = useThema()
                     <button @click="showQrPopup = true">Haal code op</button>
                 </div>
 
-                <button class="uitloggen">
-                    UITLOGGEN
-                </button>
+                <button class="uitloggen" @click="logout">UITLOGGEN</button>
 
             </div>
         </div>
@@ -88,22 +81,20 @@ const { themaKleur, themaKleurDonker } = useThema()
             <NavigatieBalk />
         </div>
 
-        <div v-if="showQrPopup" class="overlay">
+        <div v-if="showQrPopup" class="overlay" @click.self="showQrPopup = false">
             <div class="popup">
-
                 <h3>QR code</h3>
-                <p>Je kan deze doorsturen, kopiëren en of een screenshot maken.</p>
+                <p>Laat een klant deze code scannen om een review achter te laten.</p>
 
-                <QrcodeVue value="http://10.16.33.221:3000/klant/rating" :size="180" />
+                <QrcodeVue :value="qrLink" :size="180" />
 
-                <button class="copyBtn">
+                <button class="copyBtn" @click="kopieer" aria-label="Kopieer link">
                     <img src="/img/copy.png" alt="Kopiëren" />
                 </button>
 
-                <button class="shareBtn" @click="shareQr">
+                <button class="shareBtn" @click="shareQr" aria-label="Deel link">
                     <img src="/img/share.png" alt="Delen" />
                 </button>
-
             </div>
         </div>
 
@@ -122,10 +113,8 @@ const { themaKleur, themaKleurDonker } = useThema()
     flex-direction: column;
 }
 
-/* Header */
 .header {
     padding: 25px 20px;
-
     font-family: "Inter", sans-serif;
 }
 
@@ -141,29 +130,21 @@ const { themaKleur, themaKleurDonker } = useThema()
     margin: 0;
 }
 
-/* GROENE CONTAINER */
 .groen-vlak {
     flex: 1;
     display: flex;
-
     background: linear-gradient(180deg, v-bind(themaKleur), v-bind(themaKleur));
-
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
-
     padding-top: 40px;
 }
 
-/* Body inhoud */
 .body {
     display: flex;
     flex-direction: column;
     align-items: center;
-
     gap: 6px;
-
     font-family: "Inter", sans-serif;
-
     min-height: 100%;
     width: 100%;
 }
@@ -171,30 +152,23 @@ const { themaKleur, themaKleurDonker } = useThema()
 .profielfoto {
     display: flex;
     justify-content: center;
-
     width: 100%;
 }
 
 .profielfoto img {
     width: 120px;
     height: 120px;
-
     border-radius: 50%;
     border: 4px solid rgba(255, 255, 255, 0.4);
-
     object-fit: cover;
 }
 
 .info-blok {
     width: 220px;
-
     padding: 14px;
-
     background-color: v-bind(themaKleurDonker);
     color: white;
-
     border-radius: 8px;
-
     letter-spacing: 1px;
     text-align: center;
     font-size: 20px;
@@ -215,15 +189,10 @@ const { themaKleur, themaKleurDonker } = useThema()
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-
     width: 220px;
-
     padding: 15px;
-
     background-color: v-bind(themaKleurDonker);
-
     border-radius: 8px;
-
     text-align: center;
     color: white;
 }
@@ -237,14 +206,12 @@ const { themaKleur, themaKleurDonker } = useThema()
 .thema-opties {
     display: flex;
     justify-content: center;
-
     gap: 15px;
 }
 
 .kleur {
     width: 25px;
     height: 25px;
-
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -255,13 +222,8 @@ const { themaKleur, themaKleurDonker } = useThema()
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.oranje {
-    background-color: orange;
-}
-
-.wit {
-    background-color: #3ccf91;
-}
+.oranje { background-color: #FF9408; }
+.groen { background-color: #3ccf91; }
 
 .QRcode {
     width: 220px;
@@ -283,38 +245,25 @@ const { themaKleur, themaKleurDonker } = useThema()
     color: v-bind(themaKleur);
     font-size: 15px;
     font-family: "Inter", sans-serif;
-}
-
-.popup h3 {
-    font-family: "Inter", sans-serif;
-}
-
-.popup p {
-    font-family: "Inter", sans-serif;
+    cursor: pointer;
 }
 
 .uitloggen {
     width: 220px;
-
     margin-top: auto;
     margin-bottom: 20px;
     padding: 12px;
-
     border: none;
     border-radius: 10px;
     cursor: pointer;
-
     background-color: v-bind(themaKleurDonker);
     color: white;
-
     font-weight: lighter;
     letter-spacing: 2px;
     font-size: 19px;
 }
 
-.uitloggen:hover {
-    opacity: 0.9;
-}
+.uitloggen:hover { opacity: 0.9; }
 
 .footer {
     background-color: #f2f2f2;
@@ -325,28 +274,21 @@ const { themaKleur, themaKleurDonker } = useThema()
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.35);
-
     display: flex;
     justify-content: center;
     align-items: center;
-
     z-index: 999;
 }
 
 .popup {
     position: relative;
-
     width: 328px;
     min-height: 520px;
-
     background: white;
     border-radius: 28px;
-
     padding: 22px 20px 80px 20px;
-
     text-align: center;
     font-family: "Inter", sans-serif;
-
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
@@ -360,61 +302,43 @@ const { themaKleur, themaKleurDonker } = useThema()
 .popup p {
     margin-top: 12px;
     margin-bottom: 25px;
-
-    font-size: 24px;
+    font-size: 20px;
     line-height: 1.25;
     color: #333;
 }
 
-/* QR code netjes in midden */
 .popup canvas,
 .popup svg {
     display: block;
     margin: 0 auto;
 }
 
-/* COPY knop linksonder */
 .copyBtn {
     position: absolute;
     left: 28px;
     bottom: 22px;
-
     width: 42px;
     height: 42px;
-
     border: none;
     background: transparent;
     cursor: pointer;
 }
 
-.copyBtn img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
+.copyBtn img { width: 100%; height: 100%; object-fit: contain; }
 
-/* SHARE knop rechtsonder */
 .shareBtn {
     position: absolute;
     right: 28px;
     bottom: 22px;
-
     width: 42px;
     height: 42px;
-
     border: none;
     background: transparent;
     cursor: pointer;
 }
 
-.shareBtn img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
+.shareBtn img { width: 100%; height: 100%; object-fit: contain; }
 
 .copyBtn:hover,
-.shareBtn:hover {
-    transform: scale(1.08);
-}
+.shareBtn:hover { transform: scale(1.08); }
 </style>

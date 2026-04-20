@@ -2,65 +2,79 @@
 import NavigatieBalk from '~/components/NavigatieBalk.vue'
 
 const { themaKleur } = useDocentThema()
+const route = useRoute()
 
+const studentId = computed(() => {
+    const q = route.query.student
+    return q ? Number(q) : null
+})
+
+const student = ref(null)
 const actieveTab = ref('docent')
+const reviews = ref([])
+const laden = ref(false)
 
-const feedbackItems = ref([
-    {
-        id: 1,
-        project: 'Koffie project',
-        klant: 'Eric',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: true
-    },
-    {
-        id: 2,
-        project: 'Project naam',
-        klant: 'Klant naam',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-    {
-        id: 3,
-        project: 'Project naam',
-        klant: 'Klant naam',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-    {
-        id: 4,
-        project: 'Project naam',
-        klant: 'Klant naam',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-    {
-        id: 5,
-        project: 'Project naam',
-        klant: 'Klant naam',
-        tekst: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s',
-        actief: false
-    },
-])
+async function laadStudent() {
+    if (!studentId.value) return
+    try {
+        const data = await $fetch(`/api/students/${studentId.value}`)
+        student.value = data.student
+    } catch {
+        student.value = null
+    }
+}
+
+async function laadReviews() {
+    if (!studentId.value) return
+    laden.value = true
+    try {
+        const data = await $fetch('/api/reviews', {
+            params: {
+                student: studentId.value,
+                role: actieveTab.value === 'docent' ? 'teacher' : 'customer'
+            }
+        })
+        reviews.value = data.reviews
+    } finally {
+        laden.value = false
+    }
+}
+
+onMounted(async () => {
+    await Promise.all([laadStudent(), laadReviews()])
+})
+watch(actieveTab, laadReviews)
 
 const teVerwijderenId = ref(null)
 const toonPopup = ref(false)
 
-const openVerwijderPopup = (id) => {
+function openVerwijderPopup(id) {
     teVerwijderenId.value = id
     toonPopup.value = true
 }
 
-const annuleer = () => {
+function annuleer() {
     teVerwijderenId.value = null
     toonPopup.value = false
 }
 
-const bevestigVerwijder = () => {
-    feedbackItems.value = feedbackItems.value.filter(item => item.id !== teVerwijderenId.value)
-    teVerwijderenId.value = null
-    toonPopup.value = false
+async function bevestigVerwijder() {
+    const id = teVerwijderenId.value
+    if (!id) return
+    try {
+        await $fetch(`/api/reviews/${id}`, { method: 'DELETE' })
+        reviews.value = reviews.value.filter(r => r.id !== id)
+    } catch (e) {
+        alert(e?.data?.message || 'Verwijderen mislukt')
+    } finally {
+        teVerwijderenId.value = null
+        toonPopup.value = false
+    }
 }
+
+const studentNaam = computed(() =>
+    student.value ? `${student.value.first_name} ${student.value.last_name}`.trim() : ''
+)
 </script>
 
 <template>
@@ -68,30 +82,27 @@ const bevestigVerwijder = () => {
 
         <header class="paginaHoofd">
             <span class="feedbackTitel">FEEDBACK</span>
-            <span class="docentNaam">Mariska Rooth</span>
+            <span class="docentNaam">{{ studentNaam }}</span>
         </header>
 
         <div class="tabs">
-            <button :class="{ actief: actieveTab === 'docent' }" @click="actieveTab = 'docent'">
-                Docent
-            </button>
-
-            <button :class="{ actief: actieveTab === 'klant' }" @click="actieveTab = 'klant'">
-                Klant
-            </button>
+            <button :class="{ actief: actieveTab === 'docent' }" @click="actieveTab = 'docent'">Docent</button>
+            <button :class="{ actief: actieveTab === 'klant' }" @click="actieveTab = 'klant'">Klant</button>
         </div>
 
         <div class="paginaWit">
             <main class="paginaInhoud">
-                <div v-for="item in feedbackItems" :key="item.id" class="feedbackKaart" :class="[
-                    { feedbackKaartActief: item.actief && actieveTab === 'docent' },
-                    { klantWeergave: actieveTab === 'klant' }
-                ]">
+                <p v-if="laden" class="leeg">Laden…</p>
+                <p v-else-if="!reviews.length" class="leeg">Geen reviews.</p>
+                <div v-else v-for="item in reviews" :key="item.id" class="feedbackKaart"
+                    :class="{ klantWeergave: actieveTab === 'klant' }">
                     <div class="kaartKop">
-                        <span class="projectNaam">{{ item.project }}</span>
-                        <span class="klantNaam">{{ item.klant }}</span>
+                        <span class="projectNaam">{{ item.project_name || 'Project' }}</span>
+                        <span class="klantNaam">
+                            {{ actieveTab === 'klant' ? (item.customer_name || 'Klant') : 'Docent' }}
+                        </span>
                     </div>
-                    <p class="kaartTekst">{{ item.tekst }}</p>
+                    <p class="kaartTekst">{{ item.review || '-' }}</p>
                     <button class="verwijderKnop" aria-label="Verwijder feedback" @click="openVerwijderPopup(item.id)">
                         <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
                             <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12h-11L5 9zm5-6h4v2h-4V3z" />
@@ -103,7 +114,6 @@ const bevestigVerwijder = () => {
             <NavigatieBalk />
         </div>
 
-        <!-- Overlay + popup -->
         <Transition name="verwijderFade">
             <div v-if="toonPopup" class="overlay" @click.self="annuleer">
                 <Transition name="verwijderOmhoog">
@@ -146,7 +156,6 @@ const bevestigVerwijder = () => {
     display: flex;
     justify-content: center;
     gap: 8px;
-
     height: 33px;
 }
 
@@ -168,24 +177,6 @@ const bevestigVerwijder = () => {
     background-color: #f1f2f3;
     border-radius: 10px;
     padding: 16px;
-}
-
-.klantWeergave .kaartKop {
-    margin-bottom: 6px;
-}
-
-.klantWeergave .projectNaam,
-.klantWeergave .klantNaam {
-    font-weight: 700;
-}
-
-.klantWeergave .kaartTekst {
-    margin-bottom: 20px;
-}
-
-.klantWeergave .verwijderKnop {
-    bottom: 8px;
-    right: 10px;
 }
 
 .feedbackTitel {
@@ -224,26 +215,18 @@ const bevestigVerwijder = () => {
     min-height: 0;
 }
 
+.leeg {
+    text-align: center;
+    color: #666;
+    font-family: 'Inter', sans-serif;
+    margin-top: 24px;
+}
+
 .feedbackKaart {
     background-color: #f5f6f7;
-    /* border-radius: 6px; */
     padding: 14px 14px 10px;
     position: relative;
     flex-shrink: 0;
-}
-
-.feedbackKaartActief {
-    background-color: #c4554b;
-}
-
-.feedbackKaartActief .projectNaam,
-.feedbackKaartActief .klantNaam,
-.feedbackKaartActief .kaartTekst {
-    color: #ffffff;
-}
-
-.feedbackKaartActief .verwijderKnop {
-    color: #ffffff;
 }
 
 .kaartKop {
@@ -253,13 +236,7 @@ const bevestigVerwijder = () => {
     margin-bottom: 8px;
 }
 
-.projectNaam {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(15px, 4.5vw, 18px);
-    font-weight: 600;
-    color: #1a1a1a;
-}
-
+.projectNaam,
 .klantNaam {
     font-family: 'Inter', sans-serif;
     font-size: clamp(15px, 4.5vw, 18px);
@@ -285,7 +262,6 @@ const bevestigVerwijder = () => {
     cursor: pointer;
     color: #1a1a1a;
     line-height: 0;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .overlay {
@@ -335,7 +311,6 @@ const bevestigVerwijder = () => {
     font-size: clamp(13px, 4vw, 15px);
     font-weight: 600;
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .annuleerKnop {

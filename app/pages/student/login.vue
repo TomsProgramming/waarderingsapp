@@ -6,13 +6,13 @@ const password = ref('')
 const fout = ref('')
 const bezig = ref(false)
 
-const TEACHER_RE = /^[^\s@]+@glu\.nl$/i
+const STUDENT_RE = /^[^\s@]+@student\.glu\.nl$/i
 
 async function onSubmit() {
     fout.value = ''
     const e = email.value.trim().toLowerCase()
-    if (!TEACHER_RE.test(e)) {
-        fout.value = 'Gebruik een @glu.nl adres'
+    if (!STUDENT_RE.test(e)) {
+        fout.value = 'Gebruik een @student.glu.nl adres'
         return
     }
     if (!password.value) {
@@ -21,8 +21,8 @@ async function onSubmit() {
     }
     bezig.value = true
     try {
-        const { token } = await login(e, password.value, 'teacher')
-        await navigateTo({ path: '/verify', query: { mode: 'login', token, role: 'teacher' } })
+        const { token } = await login(e, password.value, 'student')
+        await navigateTo({ path: '/verify', query: { mode: 'login', token, role: 'student' } })
     } catch (err) {
         fout.value = err?.statusMessage || err?.data?.statusMessage || 'Inloggen mislukt'
     } finally {
@@ -32,12 +32,14 @@ async function onSubmit() {
 </script>
 
 <template>
-    <form class="login-docenten" @submit.prevent="onSubmit">
+    <form class="login-leerling" @submit.prevent="onSubmit">
+        <div id="logo-box">
+            <img src="/img/glulogo.png" class="glulogo" />
+        </div>
 
-        <img src="/img/glulogo.png" class="glulogo" />
         <div class="login-box">
 
-            <input v-model="email" type="email" placeholder="Docenten-mail (@glu.nl)" class="input-field" autocomplete="email" required />
+            <input v-model="email" type="email" placeholder="Schoolmail (@student.glu.nl)" class="input-field" autocomplete="email" required />
 
             <input v-model="password" type="password" placeholder="Wachtwoord" class="input-field" autocomplete="current-password" required />
 
@@ -47,26 +49,33 @@ async function onSubmit() {
 
             <p class="register-link">
                 Nog geen account?
-                <NuxtLink to="/nieuwaccount/docent">Registreer</NuxtLink>
+                <NuxtLink to="/nieuwaccount/student">Registreer</NuxtLink>
             </p>
         </div>
     </form>
 </template>
 
 <style scoped>
-.login-docenten {
-    background-image: url('/img/achtergrond-loginpagina.png');
-    background-size: cover;
-    background-position: center;
-
+.login-leerling {
     font-family: Arial, sans-serif;
-
     width: 100vw;
     height: 95vh;
 
     display: flex;
-    justify-content: center;
     align-items: center;
+    flex-direction: column;
+}
+
+#logo-box {
+    background-image: url('/img/student-inlog-achtergrond.png');
+    background-size: cover;
+    background-position: center;
+
+    width: 100%;
+    height: 92vw;
+
+    display: flex;
+    justify-content: center;
 }
 
 .login-box {
@@ -80,8 +89,7 @@ async function onSubmit() {
 }
 
 .glulogo {
-    width: 120px;
-
+    width: 160px;
     position: absolute;
     top: 40px;
 }
@@ -116,14 +124,14 @@ async function onSubmit() {
 }
 
 .register-link a {
-    color: #39c58d;
+    color: #FF9408;
     text-decoration: none;
     font-weight: 600;
 }
 
 .login-button {
     width: 100%;
-    background-color: #39c58d;
+    background-color: #FF9408;
     color: white;
 
     padding: 12px;
@@ -150,7 +158,7 @@ async function onSubmit() {
 .login-button:focus,
 .login-button:active,
 .login-button:focus-visible {
-    background-color: #39c58d !important;
+    background-color: #b76904 !important;
     outline: none !important;
     box-shadow: none !important;
 }

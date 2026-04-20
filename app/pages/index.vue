@@ -1,3 +1,7 @@
+<script setup>
+definePageMeta({ layout: false })
+</script>
+
 <template>
     <div id="beginscherm">
         <div id="logo-box">
@@ -12,9 +16,9 @@
             <P>Hoe wil je inloggen?</P>
 
             <div class="keuzen-knoppen-box">
-                <button class="keuzen-knop">Student</button>
-                <button class="keuzen-knop">Docent</button>
-                <button class="keuzen-knop">Nieuw account</button>
+                <button class="keuzen-knop" @click="navigateTo('/student/login')">Student</button>
+                <button class="keuzen-knop" @click="navigateTo('/docent/login')">Docent</button>
+                <button class="keuzen-knop" @click="navigateTo('/nieuwaccount/beginscherm')">Nieuw account</button>
             </div>
         </div>
     </div>
