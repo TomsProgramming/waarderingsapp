@@ -143,7 +143,7 @@ const volledigeNaam = computed(() =>
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 2px;
     font-family: "Inter", sans-serif;
     min-height: 100%;
     width: 100%;

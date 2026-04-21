@@ -154,7 +154,7 @@ async function onSubmit() {
 
     width: 280px;
 
-    margin-top: 70px;
+    /* margin-top: 70px; */
     padding-bottom: 30px;
 }
 
