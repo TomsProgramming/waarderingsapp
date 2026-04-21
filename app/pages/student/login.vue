@@ -5,6 +5,7 @@ const email = ref('')
 const password = ref('')
 const fout = ref('')
 const bezig = ref(false)
+const toonWachtwoord = ref(false)
 
 const STUDENT_RE = /^[^\s@]+@student\.glu\.nl$/i
 
@@ -41,7 +42,34 @@ async function onSubmit() {
 
             <input v-model="email" type="email" placeholder="Schoolmail (@student.glu.nl)" class="input-field" autocomplete="email" required />
 
-            <input v-model="password" type="password" placeholder="Wachtwoord" class="input-field" autocomplete="current-password" required />
+            <div class="wachtwoord-veld">
+                <input
+                    v-model="password"
+                    :type="toonWachtwoord ? 'text' : 'password'"
+                    placeholder="Wachtwoord"
+                    class="input-field wachtwoord-input"
+                    autocomplete="current-password"
+                    required
+                />
+                <button
+                    type="button"
+                    class="oogje"
+                    :aria-label="toonWachtwoord ? 'Wachtwoord verbergen' : 'Wachtwoord tonen'"
+                    :aria-pressed="toonWachtwoord"
+                    @click="toonWachtwoord = !toonWachtwoord"
+                >
+                    <svg v-if="!toonWachtwoord" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.5 10.5 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 4.22-5.19" />
+                        <path d="M9.9 4.24A10.5 10.5 0 0 1 12 4c6.5 0 10 7 10 7a18.6 18.6 0 0 1-2.16 3.19" />
+                        <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                        <line x1="2" y1="2" x2="22" y2="22" />
+                    </svg>
+                </button>
+            </div>
 
             <p v-if="fout" class="fout">{{ fout }}</p>
 
@@ -107,6 +135,55 @@ async function onSubmit() {
     outline: none;
 
     font-size: 16px;
+}
+
+.wachtwoord-veld {
+    position: relative;
+    width: 100%;
+}
+
+.wachtwoord-input {
+    padding-right: 34px;
+}
+
+.oogje {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+
+    background: transparent;
+    border: none;
+    padding: 0;
+
+    color: #999;
+    cursor: pointer;
+
+    transition: color 0.15s ease;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+.oogje:hover,
+.oogje[aria-pressed="true"] {
+    color: #FF9408;
+}
+
+.oogje:focus,
+.oogje:focus-visible {
+    outline: none;
+    color: #FF9408;
+}
+
+.oogje svg {
+    width: 20px;
+    height: 20px;
 }
 
 .fout {
